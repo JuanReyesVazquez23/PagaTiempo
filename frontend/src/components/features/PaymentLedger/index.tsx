@@ -6,9 +6,12 @@ import { PaymentLedgerPresentation } from "./presentation";
 interface Props {
   student: StudentDetail;
   onUpdated: (detail: StudentDetail) => void;
+  isAdmin?: boolean;
+  onResetStudent?: () => void;
+  onDeleteStudent?: () => void;
 }
 
-export function PaymentLedger({ student, onUpdated }: Props) {
+export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onDeleteStudent }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [optimisticStudent, addOptimistic] = useOptimistic(student);
@@ -45,6 +48,14 @@ export function PaymentLedger({ student, onUpdated }: Props) {
   }
 
   return (
-    <PaymentLedgerPresentation student={optimisticStudent} error={error} success={success} onSubmit={submit} />
+    <PaymentLedgerPresentation
+      student={optimisticStudent}
+      error={error}
+      success={success}
+      isAdmin={isAdmin}
+      onResetStudent={onResetStudent}
+      onDeleteStudent={onDeleteStudent}
+      onSubmit={submit}
+    />
   );
 }

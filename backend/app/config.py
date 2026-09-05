@@ -10,6 +10,7 @@ class Settings(BaseSettings):
 
     database_url: str
     treasurer_pin: str
+    admin_password: str = ""
     secret_key: str
     cors_origins: str = "http://localhost:5173"
     cookie_secure: bool = False

@@ -19,6 +19,14 @@ class LoginRequest(BaseModel):
     pin: str = Field(min_length=4, max_length=64)
 
 
+class AdminLoginRequest(BaseModel):
+    password: str = Field(min_length=1, max_length=256)
+
+
+class StudentCreate(BaseModel):
+    full_name: str = Field(min_length=2, max_length=120)
+
+
 class StudentSummary(MoneyModel):
     id: UUID
     full_name: str

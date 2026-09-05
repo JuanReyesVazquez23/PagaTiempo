@@ -20,4 +20,27 @@ describe("StudentSearchPresentation", () => {
     );
     expect(screen.getByText("Juan Pérez")).toBeTruthy();
   });
+
+  it("shows '+ Nuevo' button in admin mode and triggers callback", () => {
+    let clicked = false;
+    render(
+      <StudentSearchPresentation
+        query=""
+        deferredQuery=""
+        loading={false}
+        error={null}
+        isAdmin={true}
+        onNewStudent={() => {
+          clicked = true;
+        }}
+        students={[]}
+        onQueryChange={() => undefined}
+        onSelect={() => undefined}
+      />,
+    );
+    const button = screen.getByRole("button", { name: /\+ nuevo/i });
+    expect(button).toBeTruthy();
+    button.click();
+    expect(clicked).toBe(true);
+  });
 });

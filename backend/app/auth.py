@@ -13,8 +13,8 @@ def _serializer(settings: Settings) -> URLSafeTimedSerializer:
     return URLSafeTimedSerializer(settings.secret_key, salt="pagatiempo-treasurer")
 
 
-def create_session_cookie(response: Response, settings: Settings) -> None:
-    token = _serializer(settings).dumps({"role": "treasurer"})
+def create_session_cookie(response: Response, settings: Settings, role: str = "treasurer") -> None:
+    token = _serializer(settings).dumps({"role": role})
     response.set_cookie(
         key=COOKIE_NAME,
         value=token,
@@ -35,15 +35,34 @@ def clear_session_cookie(response: Response, settings: Settings) -> None:
     )
 
 
-def require_treasurer(
+def get_current_role(
     settings: Annotated[Settings, Depends(get_settings)],
     pagatiempo_session: Annotated[str | None, Cookie()] = None,
-) -> None:
+) -> str:
     if not pagatiempo_session:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sesión requerida")
     try:
         payload = _serializer(settings).loads(pagatiempo_session, max_age=SESSION_MAX_AGE)
     except (BadSignature, SignatureExpired) as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sesión inválida") from exc
-    if payload.get("role") != "treasurer":
+    role = payload.get("role")
+    if role not in ("treasurer", "admin"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Sesión inválida")
+    return role
+
+
+def require_treasurer(
+    role: Annotated[str, Depends(get_current_role)],
+) -> str:
+    return role
+
+
+def require_admin(
+    role: Annotated[str, Depends(get_current_role)],
+) -> str:
+    if role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Requiere permisos de administrador",
+        )
+    return role

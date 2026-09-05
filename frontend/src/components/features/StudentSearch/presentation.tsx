@@ -13,6 +13,8 @@ export interface StudentSearchPresentationProps {
   selectedId?: string | null;
   loading: boolean;
   error: string | null;
+  isAdmin?: boolean;
+  onNewStudent?: () => void;
   onQueryChange: (value: string) => void;
   onSelect: (id: string) => void;
 }
@@ -33,16 +35,30 @@ export function StudentSearchPresentation({
   selectedId,
   loading,
   error,
+  isAdmin,
+  onNewStudent,
   onQueryChange,
   onSelect,
 }: StudentSearchPresentationProps) {
   return (
     <section className="panel search-panel" aria-labelledby="search-heading">
       <div className="panel-header">
-        <h2 id="search-heading" className="panel-title">
-          Estudiantes
-        </h2>
-        <span className="badge-counter">{students.length}</span>
+        <div className="panel-header-title-group">
+          <h2 id="search-heading" className="panel-title">
+            Estudiantes
+          </h2>
+          <span className="badge-counter">{students.length}</span>
+        </div>
+        {isAdmin && onNewStudent ? (
+          <button
+            type="button"
+            className="btn-primary btn-sm"
+            onClick={onNewStudent}
+            title="Agregar un nuevo estudiante"
+          >
+            + Nuevo
+          </button>
+        ) : null}
       </div>
 
       <div className="field search-field">

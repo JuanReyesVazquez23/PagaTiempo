@@ -82,11 +82,33 @@ export async function login(pin: string): Promise<void> {
   }
 }
 
+export async function adminLogin(password: string): Promise<void> {
+  const response = await fetch(apiUrl("/api/auth/admin-login"), {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password }),
+  });
+  if (!response.ok) {
+    throw new ApiError(await parseError(response), response.status);
+  }
+}
+
+export async function exitAdminMode(): Promise<void> {
+  const response = await fetch(apiUrl("/api/auth/downgrade"), {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new ApiError(await parseError(response), response.status);
+  }
+}
+
 export async function logout(): Promise<void> {
   await fetch(apiUrl("/api/auth/logout"), { method: "POST", credentials: "include" });
 }
 
-export async function fetchMe(): Promise<{ role: string; student_count: number }> {
+export async function fetchMe(): Promise<{ role: "treasurer" | "admin"; student_count: number }> {
   const response = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
   if (!response.ok) {
     throw new ApiError("No autenticada", response.status);
@@ -133,6 +155,50 @@ export async function createPayment(
     throw new ApiError(await parseError(response), response.status);
   }
   return response.json();
+}
+
+export async function createStudent(fullName: string): Promise<StudentDetail> {
+  const response = await fetch(apiUrl("/api/admin/students"), {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ full_name: fullName }),
+  });
+  if (!response.ok) {
+    throw new ApiError(await parseError(response), response.status);
+  }
+  return response.json();
+}
+
+export async function deleteStudent(studentId: string): Promise<void> {
+  const response = await fetch(apiUrl(`/api/admin/students/${studentId}`), {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new ApiError(await parseError(response), response.status);
+  }
+}
+
+export async function resetStudentAccount(studentId: string): Promise<StudentDetail> {
+  const response = await fetch(apiUrl(`/api/admin/students/${studentId}/reset`), {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new ApiError(await parseError(response), response.status);
+  }
+  return response.json();
+}
+
+export async function resetAllAccounts(): Promise<void> {
+  const response = await fetch(apiUrl("/api/admin/reset-all"), {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new ApiError(await parseError(response), response.status);
+  }
 }
 
 export function formatMoney(value: string, currency = "DOP"): string {

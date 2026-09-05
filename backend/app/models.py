@@ -31,8 +31,12 @@ class Student(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    installments: Mapped[list["Installment"]] = relationship(back_populates="student")
-    payments: Mapped[list["Payment"]] = relationship(back_populates="student")
+    installments: Mapped[list["Installment"]] = relationship(
+        back_populates="student", cascade="all, delete-orphan", passive_deletes=True
+    )
+    payments: Mapped[list["Payment"]] = relationship(
+        back_populates="student", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class Installment(Base):

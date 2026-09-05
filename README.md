@@ -35,7 +35,7 @@ Es un repo con `frontend/` y `backend/` como carpetas hermanas, así que cada pl
 **Backend en Vercel**
 1. Nuevo proyecto → importa el repo → en **Root Directory** pon `backend`.
 2. Vercel detecta FastAPI solo (usa `app/main.py` y `requirements.txt`, sin configuración extra).
-3. Variables de entorno del proyecto (Vercel, no Netlify): `DATABASE_URL`, `TREASURER_PIN`, `SECRET_KEY`, `CORS_ORIGINS`, `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none` — ver los comentarios en `backend/.env.example`.
+3. Variables de entorno del proyecto (Vercel, no Netlify): `DATABASE_URL`, `TREASURER_PIN`, `ADMIN_PASSWORD`, `SECRET_KEY`, `CORS_ORIGINS`, `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none` — ver los comentarios en `backend/.env.example`.
 4. Si usas Neon, copia el endpoint agrupado (el que trae `-pooler` en el host) como `DATABASE_URL`: el backend corre como funciones serverless y ese endpoint evita agotar las conexiones.
 
 **Frontend en Netlify**
@@ -44,4 +44,12 @@ Es un repo con `frontend/` y `backend/` como carpetas hermanas, así que cada pl
 
 **Orden recomendado:** despliega primero el backend para tener su URL, ponla como `VITE_API_BASE_URL` en Netlify y despliega el frontend, y por último vuelve a Vercel y pon la URL final de Netlify en `CORS_ORIGINS` (puede pedir un redeploy del backend para que tome el cambio).
 
-El PIN nunca debe ir en una variable `VITE_...` ni en Netlify: cualquier variable con ese prefijo queda visible en el navegador. Vive solo en `TREASURER_PIN`, en Vercel.
+## Modos de Acceso: Tesorera y Administrador
+
+- **Modo Tesorera:** Se accede con `TREASURER_PIN` (demo: `2468`). Diseñado para el día a día: consulta de saldos, desglose de los 10 meses y registro rápido de pagos.
+- **Modo Administrador:** Se accede con `ADMIN_PASSWORD` (variable configurada en Vercel). Habilita funciones de gestión avanzada:
+  - **Agregar estudiantes:** Crea estudiantes nuevos y les genera automáticamente sus 10 cuotas correspondientes al ciclo.
+  - **Eliminar estudiantes:** Elimina al estudiante y todo su historial de cuotas/pagos asociados de manera permanente.
+  - **Limpiar cuentas:** Restablece las cuotas a 0.00 pagado y elimina los pagos registrados, ya sea para un estudiante individual o para todo el ciclo escolar.
+
+Tanto el PIN (`TREASURER_PIN`) como la contraseña de administrador (`ADMIN_PASSWORD`) y la clave de firmado (`SECRET_KEY`) se configuran únicamente en Vercel como variables de entorno privadas; nunca deben ir en variables `VITE_...` en Netlify ni exponerse en el frontend.

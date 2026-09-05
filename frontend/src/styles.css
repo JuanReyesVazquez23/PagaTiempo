@@ -1212,3 +1212,223 @@ select:focus-visible {
     animation: none !important;
   }
 }
+
+/* ==========================================================================
+   ADMIN MODE & MODALS
+   ========================================================================== */
+
+/* Login Role Tabs */
+.login-tabs {
+  display: flex;
+  background: var(--surface-sunken);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 4px;
+  margin-bottom: 1.25rem;
+}
+
+.login-tab-btn {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: calc(var(--radius-md) - 3px);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.login-tab-btn.is-active {
+  background: var(--surface-card);
+  color: var(--text-main);
+  box-shadow: 2px 2px 0px var(--border-strong);
+  border: 1.5px solid var(--border-strong);
+}
+
+/* Admin Role Tag */
+.role-tag.admin-tag {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+  box-shadow: 1px 1px 0px #b45309;
+}
+
+/* Header & Panel groups */
+.panel-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.student-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-student-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Buttons sizes & variants */
+.btn-sm {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+.btn-warn {
+  color: #92400e;
+  border-color: #d97706;
+}
+
+.btn-warn:hover:not(:disabled) {
+  background: #fffbeb;
+  border-color: #b45309;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border: 2px solid var(--border-strong);
+  box-shadow: var(--shadow-brutal-btn);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #b91c1c;
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-brutal-btn-hover);
+}
+
+.btn-danger-ghost {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.btn-danger-ghost:hover:not(:disabled) {
+  background: #fef2f2;
+}
+
+.btn-warn-ghost {
+  color: #b45309;
+  border-color: #d97706;
+}
+
+.btn-warn-ghost:hover:not(:disabled) {
+  background: #fffbeb;
+}
+
+/* Toast Notification */
+.action-toast {
+  position: sticky;
+  top: 1rem;
+  z-index: 100;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-strong);
+  background: #ecfdf5;
+  color: #065f46;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 3px 3px 0px var(--border-strong);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 999;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface-card);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 8px 8px 0px var(--border-strong), var(--shadow-neu-raised);
+  padding: 1.5rem;
+  animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-subtle);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-family: var(--font-heading);
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--text-subtle);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+}
+
+.modal-close-btn:hover {
+  background: var(--surface-inset);
+  color: var(--text-main);
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}

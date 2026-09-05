@@ -6,6 +6,9 @@ export interface PaymentLedgerPresentationProps {
   student: StudentDetail;
   error: string | null;
   success: string | null;
+  isAdmin?: boolean;
+  onResetStudent?: () => void;
+  onDeleteStudent?: () => void;
   onSubmit: (formData: FormData) => void | Promise<void>;
 }
 
@@ -67,7 +70,15 @@ function HistoryList({ payments }: { payments: Payment[] }) {
   );
 }
 
-export function PaymentLedgerPresentation({ student, error, success, onSubmit }: PaymentLedgerPresentationProps) {
+export function PaymentLedgerPresentation({
+  student,
+  error,
+  success,
+  isAdmin,
+  onResetStudent,
+  onDeleteStudent,
+  onSubmit,
+}: PaymentLedgerPresentationProps) {
   const paidVal = parseFloat(student.total_paid) || 0;
   const expectedVal = parseFloat(student.total_expected) || 0;
   const remainingVal = Math.max(0, expectedVal - paidVal);
@@ -81,9 +92,31 @@ export function PaymentLedgerPresentation({ student, error, success, onSubmit }:
             <span className="badge-meta">Ficha del Estudiante</span>
             <h2 id="pay-heading">{student.full_name}</h2>
           </div>
-          <span className={`status-badge-overall ${percentVal >= 100 ? "status-complete" : "status-active"}`}>
-            {percentVal >= 100 ? "✓ Al día" : `Pendiente ${percentVal}%`}
-          </span>
+          <div className="student-header-actions">
+            <span className={`status-badge-overall ${percentVal >= 100 ? "status-complete" : "status-active"}`}>
+              {percentVal >= 100 ? "✓ Al día" : `Pendiente ${percentVal}%`}
+            </span>
+            {isAdmin ? (
+              <div className="admin-student-btn-group">
+                <button
+                  type="button"
+                  className="btn-ghost btn-xs btn-warn"
+                  onClick={onResetStudent}
+                  title="Limpiar cuenta del estudiante (borra sus pagos)"
+                >
+                  ↺ Limpiar cuenta
+                </button>
+                <button
+                  type="button"
+                  className="btn-ghost btn-xs btn-danger"
+                  onClick={onDeleteStudent}
+                  title="Eliminar este estudiante del sistema"
+                >
+                  🗑️ Eliminar
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
 
         <div className="student-metrics-grid">

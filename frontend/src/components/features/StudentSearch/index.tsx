@@ -7,9 +7,11 @@ interface Props {
   selectedId?: string | null;
   onSelect: (id: string) => void;
   refreshKey: number;
+  isAdmin?: boolean;
+  onNewStudent?: () => void;
 }
 
-export function StudentSearch({ selectedId, onSelect, refreshKey }: Props) {
+export function StudentSearch({ selectedId, onSelect, refreshKey, isAdmin, onNewStudent }: Props) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [students, setStudents] = useState<StudentSummary[]>([]);
@@ -49,6 +51,8 @@ export function StudentSearch({ selectedId, onSelect, refreshKey }: Props) {
       selectedId={selectedId}
       loading={loading}
       error={error}
+      isAdmin={isAdmin}
+      onNewStudent={onNewStudent}
       onQueryChange={(value) => startTransition(() => setQuery(value))}
       onSelect={onSelect}
     />
