@@ -237,7 +237,7 @@ export function DashboardPage() {
                   setAdminPassword("");
                   setShowAdminModal(true);
                 }}
-                title="Activar Modo Administrador con contraseña de Vercel"
+                title="Activar Modo Administrador con clave de Vercel"
               >
                 Modo Admin ⚙️
               </button>
@@ -323,7 +323,7 @@ export function DashboardPage() {
       >
         <form onSubmit={handleAdminLogin}>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            Ingresa la contraseña maestra definida en la variable de entorno <strong>ADMIN_PASSWORD</strong> en Vercel.
+            Ingresa la contraseña maestra definida en la variable de entorno <strong>ADMIN_KEY</strong> en Vercel.
           </p>
           <div className="field">
             <label htmlFor="modal-admin-pass">Contraseña de Administrador</label>

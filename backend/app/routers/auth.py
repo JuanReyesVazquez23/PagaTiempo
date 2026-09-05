@@ -51,12 +51,12 @@ def admin_login(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
         )
-    if not settings.admin_password:
+    if not settings.admin_key:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="El modo administrador no está configurado en el servidor (falta la variable ADMIN_PASSWORD)",
+            detail="El modo administrador no está configurado en el servidor (falta la variable ADMIN_KEY)",
         )
-    if not secrets.compare_digest(body.password, settings.admin_password):
+    if not secrets.compare_digest(body.password, settings.admin_key):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Contraseña de administrador incorrecta",

@@ -15,7 +15,7 @@ def _test_settings() -> Settings:
     return Settings(
         database_url="postgresql://user:pass@localhost:5432/db",
         treasurer_pin="2468",
-        admin_password="secret-admin-pass",
+        admin_key="secret-admin-pass",
         secret_key="test-secret-key-long-enough",
     )
 
