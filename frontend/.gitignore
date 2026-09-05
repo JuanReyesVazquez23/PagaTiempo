@@ -2,3 +2,8 @@ node_modules
 dist
 .env
 .env.local
+se-security-reviewer.agent
+se-ux-ui-designer.agent
+expert-react-frontend-engineer.agent
+software-engineer-agent-v1.agent
+caveman-mode.agent
