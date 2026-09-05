@@ -203,7 +203,7 @@ export function DashboardPage() {
           </div>
         </div>
         <div className="topbar-actions">
-          {isAdmin ? (
+{isAdmin ? (
             <>
               <span className="role-tag admin-tag">👑 Administrador</span>
               <button
@@ -229,18 +229,6 @@ export function DashboardPage() {
           ) : (
             <>
               <span className="role-tag">Tesorera</span>
-              <button
-                type="button"
-                className="btn-ghost btn-admin-toggle"
-                onClick={() => {
-                  setAdminError(null);
-                  setAdminPassword("");
-                  setShowAdminModal(true);
-                }}
-                title="Activar Modo Administrador con clave de Vercel"
-              >
-                Modo Admin ⚙️
-              </button>
             </>
           )}
           <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
