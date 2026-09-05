@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 import { PaymentLedger } from "../components/features/PaymentLedger";
 import { StudentSearch } from "../components/features/StudentSearch";
-import { Modal } from "../components/ui/MonthGrid";
+import { Modal } from "../components/ui/Modal";
 import { MonthGrid } from "../components/ui/MonthGrid";
 import {
+  ApiError,
   createStudent,
   deleteStudent,
   fetchMe,
