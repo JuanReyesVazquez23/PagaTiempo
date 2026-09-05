@@ -21,22 +21,53 @@ export function LoginPage() {
   }
 
   return (
-    <main className="shell">
-      <header className="hero">
-        <p className="eyebrow">Tesorera · ciclo 10 meses</p>
-        <h1>PagaTiempo</h1>
-        <p>Anota cuotas sin mezclar historiales.</p>
-      </header>
-      <form className="panel login-card" onSubmit={onSubmit}>
-        <label htmlFor="pin">PIN de tesorera</label>
-        <input id="pin" name="pin" type="password" autoComplete="current-password" minLength={4} required />
-        {error ? (
-          <p className="alert" role="alert">
-            {error}
+    <main className="shell login-shell">
+      <div className="login-wrapper">
+        <header className="hero login-hero">
+          <div className="login-brand-pill">
+            <span className="brand-badge" aria-hidden="true">PT</span>
+            <span className="eyebrow">Tesorera · Ciclo 10 meses</span>
+          </div>
+          <h1>PagaTiempo</h1>
+          <p className="login-tagline">
+            Gestión ordenada de cuotas escolares. Registro ágil e historiales individuales por estudiante.
           </p>
-        ) : null}
-        <button type="submit">Entrar</button>
-      </form>
+        </header>
+
+        <form className="panel login-card" onSubmit={onSubmit}>
+          <div className="card-header">
+            <div className="lock-icon" aria-hidden="true">🔐</div>
+            <div>
+              <h2 className="login-card-title">Acceso al Panel</h2>
+              <p className="hint">Ingresa tu PIN de seguridad para continuar</p>
+            </div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="pin">PIN de tesorera</label>
+            <input
+              id="pin"
+              name="pin"
+              type="password"
+              autoComplete="current-password"
+              minLength={4}
+              required
+              placeholder="••••"
+              className="neu-input pin-input"
+            />
+          </div>
+
+          {error ? (
+            <p className="alert" role="alert">
+              <span aria-hidden="true">⚠️</span> {error}
+            </p>
+          ) : null}
+
+          <button type="submit" className="btn-primary login-btn">
+            Entrar al Libro de Cuotas →
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

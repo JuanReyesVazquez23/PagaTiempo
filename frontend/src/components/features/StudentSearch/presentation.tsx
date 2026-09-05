@@ -5,57 +5,122 @@ export interface StudentRow {
   total_expected: string;
 }
 
+
 export interface StudentSearchPresentationProps {
   query: string;
   deferredQuery: string;
   students: StudentRow[];
+  selectedId?: string | null;
   loading: boolean;
   error: string | null;
   onQueryChange: (value: string) => void;
   onSelect: (id: string) => void;
 }
 
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 export function StudentSearchPresentation({
   query,
   deferredQuery,
   students,
+  selectedId,
   loading,
   error,
   onQueryChange,
   onSelect,
 }: StudentSearchPresentationProps) {
   return (
-    <section className="panel" aria-labelledby="search-heading">
-      <h2 id="search-heading">Estudiantes</h2>
-      <label htmlFor="student-search">Buscar por nombre</label>
-      <input
-        id="student-search"
-        type="search"
-        value={query}
-        onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Juan, María, Pedro…"
-        autoComplete="off"
-      />
-      {deferredQuery !== query ? <p className="hint">Filtrando…</p> : null}
-      {error ? (
-        <p className="alert" role="alert">
-          {error}
+    <section className="panel search-panel" aria-labelledby="search-heading">
+      <div className="panel-header">
+        <h2 id="search-heading" className="panel-title">
+          Estudiantes
+        </h2>
+        <span className="badge-counter">{students.length}</span>
+      </div>
+
+      <div className="field search-field">
+        <label htmlFor="student-search">Buscar estudiante</label>
+        <div className="input-with-icon">
+          <span className="search-icon" aria-hidden="true">🔍</span>
+          <input
+            id="student-search"
+            type="search"
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+            placeholder="Buscar por nombre o apellido…"
+            autoComplete="off"
+            className="neu-input search-input"
+          />
+        </div>
+      </div>
+
+      {deferredQuery !== query ? (
+        <p className="hint hint-filtering">
+          <span className="spinner-dot" /> Filtrando…
         </p>
       ) : null}
-      {loading ? <p>Cargando listado…</p> : null}
-      <ul className="student-list">
-        {students.map((student) => (
-          <li key={student.id}>
-            <button type="button" className="student-row" onClick={() => onSelect(student.id)}>
-              <span>{student.full_name}</span>
-              <span>
-                {student.total_paid} / {student.total_expected}
-              </span>
-            </button>
-          </li>
-        ))}
+
+      {error ? (
+        <p className="alert" role="alert">
+          <span aria-hidden="true">⚠️</span> {error}
+        </p>
+      ) : null}
+
+      {loading ? (
+        <div className="loading-state">
+          <p className="hint">Cargando listado…</p>
+        </div>
+      ) : null}
+
+      <ul className="student-list" aria-label="Lista de estudiantes">
+        {students.map((student) => {
+          const isSelected = selectedId === student.id;
+          const paid = parseFloat(student.total_paid) || 0;
+          const total = parseFloat(student.total_expected) || 0;
+          const isComplete = total > 0 && paid >= total;
+
+          return (
+            <li key={student.id}>
+              <button
+                type="button"
+                className={`student-row ${isSelected ? "is-selected" : ""}`}
+                onClick={() => onSelect(student.id)}
+                aria-current={isSelected ? "true" : undefined}
+              >
+                <div className="student-row-main">
+                  <span className="student-avatar" aria-hidden="true">
+                    {getInitials(student.full_name)}
+                  </span>
+                  <div className="student-info">
+                    <span className="student-name">{student.full_name}</span>
+                    <span className="student-status-text">
+                      {isComplete ? "Completado" : "En curso"}
+                    </span>
+                  </div>
+                </div>
+                <div className="student-balance-chip">
+                  <span className="chip-paid">${student.total_paid}</span>
+                  <span className="chip-divider">/</span>
+                  <span className="chip-total">${student.total_expected}</span>
+                </div>
+              </button>
+            </li>
+          );
+        })}
       </ul>
-      {!loading && students.length === 0 ? <p>Ningún estudiante coincide.</p> : null}
+
+      {!loading && students.length === 0 ? (
+        <div className="empty-state">
+          <p className="empty-text">Ningún estudiante coincide con la búsqueda.</p>
+        </div>
+      ) : null}
     </section>
   );
 }

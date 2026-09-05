@@ -60,16 +60,23 @@ export function DashboardPage() {
   return (
     <main className="shell">
       <header className="topbar">
-        <div>
-          <p className="eyebrow">Septiembre 2026 — Junio 2027</p>
-          <h1>Libro de cuotas</h1>
+        <div className="topbar-brand">
+          <div className="brand-badge" aria-hidden="true">PT</div>
+          <div>
+            <span className="eyebrow">Ciclo Sep 2026 — Jun 2027</span>
+            <h1>Libro de Cuotas</h1>
+          </div>
         </div>
-        <button type="button" className="ghost" onClick={onLogout}>
-          Salir
-        </button>
+        <div className="topbar-actions">
+          <span className="role-tag">Tesorera</span>
+          <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
+            Salir →
+          </button>
+        </div>
       </header>
       <div className="layout">
         <StudentSearch
+          selectedId={selectedId}
           refreshKey={refreshKey}
           onSelect={(id) => {
             setSelectedId(id);
@@ -78,7 +85,7 @@ export function DashboardPage() {
         <div className="detail">
           {loadError ? (
             <p className="alert" role="alert">
-              {loadError}
+              <span aria-hidden="true">⚠️</span> {loadError}
             </p>
           ) : null}
           {detail ? (
@@ -93,7 +100,11 @@ export function DashboardPage() {
               />
             </>
           ) : (
-            <p className="panel empty">Elige un estudiante para ver su historial de 10 meses.</p>
+            <div className="panel empty-hero">
+              <div className="empty-hero-icon" aria-hidden="true">📋</div>
+              <h3>Selecciona un estudiante</h3>
+              <p className="hint">Elige un nombre en la lista de la izquierda para ver su historial de 10 meses y registrar cuotas.</p>
+            </div>
           )}
         </div>
       </div>

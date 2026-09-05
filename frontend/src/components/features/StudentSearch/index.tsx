@@ -4,11 +4,12 @@ import { ApiError, fetchStudents, type StudentSummary } from "../../../lib/api";
 import { StudentSearchPresentation } from "./presentation";
 
 interface Props {
+  selectedId?: string | null;
   onSelect: (id: string) => void;
   refreshKey: number;
 }
 
-export function StudentSearch({ onSelect, refreshKey }: Props) {
+export function StudentSearch({ selectedId, onSelect, refreshKey }: Props) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [students, setStudents] = useState<StudentSummary[]>([]);
@@ -45,6 +46,7 @@ export function StudentSearch({ onSelect, refreshKey }: Props) {
       query={query}
       deferredQuery={deferredQuery}
       students={students}
+      selectedId={selectedId}
       loading={loading}
       error={error}
       onQueryChange={(value) => startTransition(() => setQuery(value))}
