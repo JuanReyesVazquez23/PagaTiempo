@@ -6,12 +6,11 @@ Libro de cuotas para tesorera. 10 meses desde el 4 de septiembre de 2026 (sep 20
 
 - React 19 + TypeScript (Vite)
 - FastAPI
-- PostgreSQL (`DATABASE_URL`; Neon u otro host, o Docker local)
+- PostgreSQL (`DATABASE_URL`; Neon u otro host Postgres)
 
 ## Arranque
 
 ```bash
-docker compose up -d
 cd backend
 python -m venv .venv
 .venv\Scripts\pip install -r requirements.txt
