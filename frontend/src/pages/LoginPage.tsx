@@ -90,7 +90,7 @@ export function LoginPage() {
                   id="admin-key"
                   name="adminKey"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="off"
                   minLength={4}
                   required
                   placeholder="••••••••"
@@ -104,7 +104,7 @@ export function LoginPage() {
                   id="pin"
                   name="pin"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="off"
                   minLength={4}
                   required
                   placeholder="••••"
