@@ -3,14 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import { PaymentLedger } from "../components/features/PaymentLedger";
 import { StudentSearch } from "../components/features/StudentSearch";
-import { Modal } from "../components/ui/Modal";
+import { Modal } from "../components/ui/MonthGrid";
 import { MonthGrid } from "../components/ui/MonthGrid";
 import {
-  ApiError,
-  adminLogin,
   createStudent,
   deleteStudent,
-  exitAdminMode,
   fetchMe,
   fetchStudent,
   logout,
@@ -28,11 +25,6 @@ export function DashboardPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
-
-  // Modales
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [adminPassword, setAdminPassword] = useState("");
-  const [adminError, setAdminError] = useState<string | null>(null);
 
   const [showNewStudentModal, setShowNewStudentModal] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
@@ -84,31 +76,7 @@ export function DashboardPage() {
     navigate("/");
   }
 
-  async function handleAdminLogin(e: FormEvent): Promise<void> {
-    e.preventDefault();
-    setAdminError(null);
-    try {
-      await adminLogin(adminPassword);
-      setRole("admin");
-      setShowAdminModal(false);
-      setAdminPassword("");
-      setActionNotice("Modo Administrador activado con éxito");
-      setTimeout(() => setActionNotice(null), 4000);
-    } catch (cause: unknown) {
-      setAdminError(cause instanceof ApiError ? cause.message : "Error al autenticar");
-    }
-  }
-
-  async function handleExitAdmin(): Promise<void> {
-    try {
-      await exitAdminMode();
-      setRole("treasurer");
-      setActionNotice("Has salido del Modo Administrador");
-      setTimeout(() => setActionNotice(null), 4000);
-    } catch {
-      fetchMe().then((res) => setRole(res.role));
-    }
-  }
+  
 
   async function handleCreateStudent(e: FormEvent): Promise<void> {
     e.preventDefault();
@@ -203,7 +171,7 @@ export function DashboardPage() {
           </div>
         </div>
         <div className="topbar-actions">
-{isAdmin ? (
+{role === "admin" ? (
             <>
               <span className="role-tag admin-tag">👑 Administrador</span>
               <button
@@ -220,7 +188,7 @@ export function DashboardPage() {
               <button
                 type="button"
                 className="btn-ghost"
-                onClick={handleExitAdmin}
+                onClick={() => setRole("treasurer")}
                 title="Salir del Modo Administrador y volver a modo regular"
               >
                 Salir de Admin
@@ -229,18 +197,6 @@ export function DashboardPage() {
           ) : (
             <>
               <span className="role-tag">Tesorera</span>
-              <button
-                type="button"
-                className="btn-ghost btn-admin-toggle"
-                onClick={() => {
-                  setAdminError(null);
-                  setAdminPassword("");
-                  setShowAdminModal(true);
-                }}
-                title="Activar Modo Administrador con clave de Vercel"
-              >
-                Modo Admin ⚙️
-              </button>
             </>
           )}
           <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
@@ -314,49 +270,6 @@ export function DashboardPage() {
           )}
         </div>
       </div>
-
-      {/* Modal: Acceso a Modo Administrador */}
-      <Modal
-        isOpen={showAdminModal}
-        onClose={() => setShowAdminModal(false)}
-        title="Acceso a Modo Administrador"
-      >
-        <form onSubmit={handleAdminLogin}>
-          <p className="hint" style={{ marginBottom: "1rem" }}>
-            Ingresa la contraseña maestra definida en la variable de entorno <strong>ADMIN_KEY</strong> en Vercel.
-          </p>
-          <div className="field">
-            <label htmlFor="modal-admin-pass">Contraseña de Administrador</label>
-            <input
-              id="modal-admin-pass"
-              type="password"
-              autoFocus
-              required
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
-              placeholder="••••••••"
-              className="neu-input"
-            />
-          </div>
-          {adminError ? (
-            <p className="alert" role="alert">
-              <span aria-hidden="true">⚠️</span> {adminError}
-            </p>
-          ) : null}
-          <div className="modal-actions">
-            <button
-              type="button"
-              className="btn-ghost"
-              onClick={() => setShowAdminModal(false)}
-            >
-              Cancelar
-            </button>
-            <button type="submit" className="btn-primary">
-              Desbloquear Modo Admin
-            </button>
-          </div>
-        </form>
-      </Modal>
 
       {/* Modal: Agregar Nuevo Estudiante */}
       <Modal
