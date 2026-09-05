@@ -123,16 +123,6 @@ export function LoginPage() {
           <button type="submit" className="btn-primary login-btn">
             {showAdminKey ? "Entrar como Administrador" : "Entrar al Libro de Cuotas"} →
           </button>
-
-          {showAdminKey ? null : (
-            <button
-              type="button"
-              className="btn-ghost"
-              title="Dar 10 clics en el logo PT para activar modo admin"
-            >
-              Modo admin
-            </button>
-          )}
         </form>
       </div>
     </main>
