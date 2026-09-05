@@ -6,12 +6,12 @@ import { ApiError, login, adminLogin } from "../lib/api";
 export function LoginPage() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  const [clicks, setClicks] = useState(0);
+  const [_clicks, set_Clicks] = useState(0);
   const [showAdminKey, setShowAdminKey] = useState(false);
 
   useEffect(() => {
     const handleClick = () => {
-      setClicks((c) => {
+      set_Clicks((c) => {
         if (c >= 9) {
           setShowAdminKey(true);
           return 0;
@@ -130,7 +130,7 @@ export function LoginPage() {
               className="btn-ghost"
               title="Dar 10 clics en el logo PT para activar modo admin"
             >
-              {clicks < 10 ? `${10 - clicks} clics más` : "Modo admin activo"}
+              Modo admin
             </button>
           )}
         </form>
