@@ -189,7 +189,7 @@ export function DashboardPage() {
                 type="button"
                 className="btn-ghost"
                 onClick={() => setRole("treasurer")}
-                title="Salir del Modo Administrador y volver a modo regular"
+                title="Volver modo tesorera"
               >
                 Salir de Admin
               </button>
