@@ -1,0 +1,14 @@
+---
+description: React 19 + TypeScript patterns for the treasurer UI
+globs: frontend/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# React Frontend
+
+- Functional components only. Strict TypeScript. No `any`.
+- Container/presentation: hooks and fetch in `features/*/use*.tsx`; UI in `presentation.tsx`.
+- Search uses `useDeferredValue`. Payment submit may use `useOptimistic` + `useFormStatus`.
+- Semantic HTML, visible focus, labels (not placeholder-only), Spanish copy.
+- Pass `ref` as a prop (no `forwardRef`).
+- Keep interactive targets ≥ 44px. Honor `prefers-reduced-motion`.

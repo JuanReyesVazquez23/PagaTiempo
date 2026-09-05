@@ -1,0 +1,14 @@
+---
+description: OWASP-oriented security for the FastAPI API and treasurer session
+globs: backend/**/*.py
+alwaysApply: false
+---
+
+# Security
+
+- ORM or bound parameters only — never f-strings in SQL.
+- Treasurer mutations require a verified session cookie; reject missing/invalid tokens with 401.
+- Validate amounts (`> 0`), UUIDs, and note length in Pydantic.
+- CORS allowlist from settings. `HttpOnly` + `SameSite` cookies.
+- Compare PIN with a secret from env (hashed). Do not log PINs or connection strings.
+- Do not return stack traces to the client.

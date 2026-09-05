@@ -1,0 +1,223 @@
+:root {
+  color: #1c1917;
+  background: #efe6d6;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at top right, #f4d7b0 0%, transparent 40%),
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(28, 25, 23, 0.04) 28px);
+}
+
+h1,
+h2,
+h3 {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.7rem 1.1rem;
+  border: 2px solid #1c1917;
+  background: #b45309;
+  color: #fff7ed;
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #1c1917;
+  outline-offset: 2px;
+}
+
+button.ghost {
+  background: transparent;
+  color: #1c1917;
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+input,
+select {
+  min-height: 44px;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 2px solid #1c1917;
+  background: #fffaf2;
+}
+
+.shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.5rem 1.2rem 3rem;
+}
+
+.eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.hero,
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr;
+  gap: 1.2rem;
+}
+
+.panel {
+  background: rgba(255, 250, 242, 0.92);
+  border: 2px solid #1c1917;
+  padding: 1rem;
+}
+
+.login-card {
+  max-width: 420px;
+}
+
+.student-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.8rem 0 0;
+}
+
+.student-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background: #fffaf2;
+  color: #1c1917;
+  margin-bottom: 0.4rem;
+}
+
+.month-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.6rem;
+}
+
+.month-card {
+  border: 2px solid #1c1917;
+  padding: 0.7rem;
+  background: #fffaf2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.month-index {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.status-pagado {
+  background: #dcfce7;
+}
+
+.status-parcial {
+  background: #fef3c7;
+}
+
+.status-pendiente {
+  background: #fffaf2;
+}
+
+.status-sobrepago {
+  background: #e0f2fe;
+}
+
+.month-status {
+  font-weight: 600;
+}
+
+.pay-form,
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.7rem;
+}
+
+.history {
+  list-style: none;
+  padding: 0;
+}
+
+.history li {
+  border-top: 1px solid #d6d3d1;
+  padding: 0.6rem 0;
+}
+
+.history div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.alert {
+  color: #9f1239;
+  font-weight: 600;
+}
+
+.success {
+  color: #166534;
+  font-weight: 600;
+}
+
+.hint,
+.empty {
+  color: #57534e;
+}
+
+@media (max-width: 800px) {
+  .layout,
+  .hero,
+  .topbar {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

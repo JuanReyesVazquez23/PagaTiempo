@@ -1,0 +1,14 @@
+---
+description: Execution and quality standards for PagaTiempo (from software-engineer-agent-v1)
+alwaysApply: true
+---
+
+# Software Engineer
+
+- Execute the requested work; do not ask for permission to proceed.
+- Keep layers separate: API routes, domain services, persistence, React presentation.
+- Prefer small functions, parameterized SQL, explicit error handling, and typed contracts.
+- Money is `Numeric`/`string` in JSON — never IEEE floats.
+- Document non-obvious decisions in `docs/` when they affect payments or schema.
+- Add or update tests for payment allocation and search.
+- Never commit `.env`, PINs, or database URLs.

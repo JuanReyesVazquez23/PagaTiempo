@@ -1,0 +1,14 @@
+---
+description: Jobs-to-be-Done for the treasurer payment ledger
+globs: frontend/**/*.{tsx,css}
+alwaysApply: false
+---
+
+# UX tesorera
+
+Job: When a student pays, I want to find them and record the amount so the 10-month history stays accurate.
+
+- Search first, then history, then register payment.
+- Show 10 months with paid / partial / pending — never color alone.
+- Confirm the recorded amount and remaining balance after submit.
+- Errors as text + icon, announced to assistive tech (`role="alert"`).
