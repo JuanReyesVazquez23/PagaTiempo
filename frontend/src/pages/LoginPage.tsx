@@ -55,7 +55,7 @@ export function LoginPage() {
     <main className="shell login-shell">
       <div className="login-wrapper">
         <header className="hero login-hero">
-          <div className="login-brand-pill" onClick={() => setClicks(0)}>
+          <div className="login-brand-pill">
             <span className="brand-badge" aria-hidden="true">PT</span>
             <span className="eyebrow">
               {showAdminKey ? "Administrador" : "Tesorera"} · Ciclo 10 meses
@@ -128,7 +128,6 @@ export function LoginPage() {
             <button
               type="button"
               className="btn-ghost"
-              onClick={() => setClicks(0)}
               title="Dar 10 clics en el logo PT para activar modo admin"
             >
               {clicks < 10 ? `${10 - clicks} clics más` : "Modo admin activo"}
