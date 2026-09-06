@@ -40,6 +40,9 @@ export function DashboardPage() {
   const [showResetAllModal, setShowResetAllModal] = useState(false);
   const [resetAllError, setResetAllError] = useState<string | null>(null);
 
+  const [showPWAInstall, setShowPWAInstall] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
   useEffect(() => {
     let active = true;
     fetchMe()
@@ -153,6 +156,20 @@ export function DashboardPage() {
     );
   }
 
+  useEffect(() => {
+    const handleBeforeInstall = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event);
+      setShowPWAInstall(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+    };
+  }, [deferredPrompt, showPWAInstall]);
+
   const isAdmin = role === "admin";
 
   return (
@@ -171,7 +188,7 @@ export function DashboardPage() {
             <h1>Libro de Cuotas</h1>
           </div>
         </div>
-        <div className="topbar-actions">
+<div className="topbar-actions">
 {role === "admin" ? (
             <>
               <span className="role-tag admin-tag">👑 Administrador</span>
@@ -199,6 +216,23 @@ export function DashboardPage() {
             <>
               <span className="role-tag">Tesorera</span>
             </>
+          )}
+          {showPWAInstall ? (
+            <button
+              onClick={() => setShowPWAInstall(false)}
+              className="pwa-install-btn"
+              aria-label="Cancelar instalación de PWA"
+            >
+              Cancelar
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowPWAInstall(true)}
+              className="pwa-install-btn"
+              aria-label="Agregar PagaTiempo a la pantalla principal"
+            >
+              Agregar a la pantalla principal
+            </button>
           )}
           <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
             Salir →
