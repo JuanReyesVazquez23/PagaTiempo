@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 import { PaymentLedger } from "../components/features/PaymentLedger";
 import { StudentSearch } from "../components/features/StudentSearch";
-import { Modal } from "../components/ui/Modal";
+import { Modal } from "../components/ui/MonthGrid";
 import { MonthGrid } from "../components/ui/MonthGrid";
 import {
-  ApiError,
   createStudent,
   deleteStudent,
   fetchMe,
@@ -39,9 +38,6 @@ export function DashboardPage() {
 
   const [showResetAllModal, setShowResetAllModal] = useState(false);
   const [resetAllError, setResetAllError] = useState<string | null>(null);
-
-  const [showPWAInstall, setShowPWAInstall] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     let active = true;
@@ -79,8 +75,6 @@ export function DashboardPage() {
     await logout();
     navigate("/");
   }
-
-  
 
   async function handleCreateStudent(e: FormEvent): Promise<void> {
     e.preventDefault();
@@ -156,20 +150,6 @@ export function DashboardPage() {
     );
   }
 
-  useEffect(() => {
-    const handleBeforeInstall = (event: Event) => {
-      event.preventDefault();
-      setDeferredPrompt(event);
-      setShowPWAInstall(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-    };
-  }, [deferredPrompt, showPWAInstall]);
-
   const isAdmin = role === "admin";
 
   return (
@@ -188,8 +168,8 @@ export function DashboardPage() {
             <h1>Libro de Cuotas</h1>
           </div>
         </div>
-<div className="topbar-actions">
-{role === "admin" ? (
+        <div className="topbar-actions">
+          {isAdmin ? (
             <>
               <span className="role-tag admin-tag">👑 Administrador</span>
               <button
@@ -216,23 +196,6 @@ export function DashboardPage() {
             <>
               <span className="role-tag">Tesorera</span>
             </>
-          )}
-          {showPWAInstall ? (
-            <button
-              onClick={() => setShowPWAInstall(false)}
-              className="pwa-install-btn"
-              aria-label="Cancelar instalación de PWA"
-            >
-              Cancelar
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowPWAInstall(true)}
-              className="pwa-install-btn"
-              aria-label="Agregar PagaTiempo a la pantalla principal"
-            >
-              Agregar a la pantalla principal
-            </button>
           )}
           <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
             Salir →
@@ -285,7 +248,7 @@ export function DashboardPage() {
               <div className="empty-hero-icon" aria-hidden="true">📋</div>
               <h3>Selecciona un estudiante</h3>
               <p className="hint">
-                Elige un nombre en la lista de la izquierda para ver su historial de 10 meses y registrar cuotas.
+                Elige un nombre de la lista para ver su historial de 10 meses y registrar cuotas.
               </p>
               {isAdmin ? (
                 <button
@@ -302,7 +265,7 @@ export function DashboardPage() {
                 </button>
               ) : null}
             </div>
-          )}
+          </div>
         </div>
       </div>
 
