@@ -8,6 +8,8 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [_clicks, set_Clicks] = useState(0);
   const [showAdminKey, setShowAdminKey] = useState(false);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     const handleClick = () => {
@@ -31,6 +33,31 @@ export function LoginPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const installPWA = () => {
+      if (!deferredPrompt || showInstallButton) return;
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", (event: Event) => {
+      // Prevent Chrome 67 and earlier from automatically showing the mini-infobar
+      event.preventDefault();
+      // Stash the event so it can be triggered later
+      setDeferredPrompt(event);
+      // Show our install button
+      setShowInstallButton(true);
+    });
+
+    // Hide the install button if user dismisses it with the X or "Cancel"
+    window.addEventListener("appinstalled", () => {
+      setShowInstallButton(false);
+      setDeferredPrompt(null);
+    });
+  }, [deferredPrompt, showInstallButton]);
+
+  // Check if already running in PWA mode
+  const isPWA = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -50,6 +77,21 @@ export function LoginPage() {
       );
     }
   }
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      setDeferredPrompt(null);
+      setShowInstallButton(false);
+      // Update localStorage to remember user choice
+      localStorage.setItem("pwaInstallAttempted", "true");
+    }
+  };
+
+  const handleDismissClick = () => {
+    setShowInstallButton(false);
+    localStorage.setItem("pwaInstallDismissed", "true");
+  };
 
   return (
     <main className="shell login-shell">
@@ -124,6 +166,28 @@ export function LoginPage() {
             {showAdminKey ? "Entrar como Administrador" : "Entrar al Libro de Cuotas"} →
           </button>
         </form>
+
+        {isPWA ? null : (
+          <div className="pwa-install">
+            {showInstallButton ? (
+              <button
+                onClick={handleDismissClick}
+                className="pwa-install-btn"
+                aria-label="Cancelar instalación de PWA"
+              >
+                Cancelar
+              </button>
+            ) : (
+              <button
+                onClick={handleInstallClick}
+                className="pwa-install-btn"
+                aria-label="Agregar PagaTiempo a la pantalla principal"
+              >
+                Agregar a la pantalla principal
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </main>
   );
