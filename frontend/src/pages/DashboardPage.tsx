@@ -248,7 +248,7 @@ export function DashboardPage() {
               <div className="empty-hero-icon" aria-hidden="true">📋</div>
               <h3>Selecciona un estudiante</h3>
               <p className="hint">
-                Elige un nombre de la lista para ver su historial de 10 meses y registrar cuotas.
+                Elige un nombre de la lista para ver su historial de pagos y cuotas.
               </p>
               {isAdmin ? (
                 <button
