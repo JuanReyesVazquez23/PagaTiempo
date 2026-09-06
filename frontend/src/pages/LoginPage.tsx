@@ -33,12 +33,7 @@ export function LoginPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const installPWA = () => {
-      if (!deferredPrompt || showInstallButton) return;
-      setShowInstallButton(true);
-    };
-
+useEffect(() => {
     window.addEventListener("beforeinstallprompt", (event: Event) => {
       // Prevent Chrome 67 and earlier from automatically showing the mini-infobar
       event.preventDefault();
@@ -56,7 +51,7 @@ export function LoginPage() {
   }, [deferredPrompt, showInstallButton]);
 
   // Check if already running in PWA mode
-  const isPWA = window.navigator.standalone || window.matchMedia("(display-mode: standalone)").matches;
+  const isPWA = window.matchMedia("(display-mode: standalone)").matches;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
