@@ -2,6 +2,23 @@
   command = "npm run build"
   publish = "dist"
 
+# Proxy same-origin hacia el backend de Vercel: el navegador solo ve
+# peticiones a tu-sitio.netlify.app/api/..., Netlify las reenvía por detrás
+# a Vercel y la URL en la barra de direcciones no cambia (status = 200
+# = rewrite, no redirect). Esto es lo que soluciona el login en iOS: en
+# Safari, si el frontend y el backend viven en dominios distintos, la
+# cookie de sesión es "de terceros" y Safari (ITP) la bloquea siempre,
+# aunque el backend la mande con SameSite=None; Secure. Con este proxy
+# la cookie pasa a ser de primera parte y Safari deja de bloquearla.
+#
+# IMPORTANTE: reemplaza la URL de abajo por la de tu backend real en
+# Vercel (la misma que usarías en VITE_API_BASE_URL).
+[[redirects]]
+  from = "/api/*"
+  to = "https://pagatiempobackend.vercel.app/api/:splat"
+  status = 200
+  force = true
+
 # App de una sola página (React Router): cualquier ruta que no sea un
 # archivo estático (por ejemplo /panel) debe servir index.html para que
 # el router del navegador la maneje. Sin esto, recargar /panel da 404.

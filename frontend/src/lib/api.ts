@@ -1,8 +1,10 @@
 // URL base de la API. Vacía por defecto: en desarrollo el proxy de Vite
 // reenvía /api a localhost:8000, y en producción funciona si el frontend
-// y el backend comparten dominio. Si el frontend vive en un dominio
-// distinto (p. ej. Vercel) y el backend en otro (p. ej. Railway), define
-// VITE_API_BASE_URL en Vercel con la URL completa del backend.
+// y el backend comparten dominio (incluido el proxy same-origin de
+// frontend/netlify.toml, que es el caso recomendado cuando el frontend
+// vive en Netlify y el backend en Vercel: ver ese archivo). Dejarla vacía
+// en ese caso es intencional y necesario para que el login funcione en
+// Safari/iOS, que bloquea la cookie de sesión si queda "de terceros".
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
 function apiUrl(path: string): string {
