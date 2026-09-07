@@ -2,6 +2,7 @@ import { useOptimistic, useState } from "react";
 
 import { ApiError, createPayment, type StudentDetail } from "../../../lib/api";
 import { PaymentLedgerPresentation } from "./presentation";
+import { ReceiptModal } from "../../../components/ui/ReceiptModal";
 
 interface Props {
   student: StudentDetail;
@@ -14,6 +15,14 @@ interface Props {
 export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onDeleteStudent }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [receiptOpen, setReceiptOpen] = useState<boolean>(false);
+  const [receiptData, setReceiptData] = useState<{
+    studentName: string;
+    amount: string;
+    date: string;
+    note: string | null;
+    paymentId: string;
+  } | null>(null);
   const [optimisticStudent, addOptimistic] = useOptimistic(student);
 
   async function submit(formData: FormData): Promise<void> {
@@ -41,6 +50,14 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
       const updated = await createPayment(student.id, { amount, month_index, note });
       onUpdated(updated);
       setSuccess(`Registrado ${amount} para ${updated.full_name}.`);
+      setReceiptOpen(true);
+      setReceiptData({
+        studentName: updated.full_name,
+        amount,
+        date: new Date().toISOString(),
+        note: note || null,
+        paymentId: updated.payments.at(-1)?.id || `temp-${Date.now()}`,
+      });
     } catch (cause: unknown) {
       const message = cause instanceof ApiError ? cause.message : "No se pudo guardar el pago";
       setError(message);
@@ -48,14 +65,27 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
   }
 
   return (
-    <PaymentLedgerPresentation
-      student={optimisticStudent}
-      error={error}
-      success={success}
-      isAdmin={isAdmin}
-      onResetStudent={onResetStudent}
-      onDeleteStudent={onDeleteStudent}
-      onSubmit={submit}
-    />
+    <>
+      <PaymentLedgerPresentation
+        student={optimisticStudent}
+        error={error}
+        success={success}
+        isAdmin={isAdmin}
+        onResetStudent={onResetStudent}
+        onDeleteStudent={onDeleteStudent}
+        onSubmit={submit}
+      />
+      {receiptOpen && (
+        <ReceiptModal
+          isOpen={receiptOpen}
+          onClose={() => setReceiptOpen(false)}
+          studentName={receiptData!.studentName}
+          amount={receiptData!.amount}
+          date={receiptData!.date}
+          note={receiptData!.note}
+          paymentId={receiptData!.paymentId}
+        />
+      )}
+    </>
   );
 }

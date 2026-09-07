@@ -1,0 +1,104 @@
+import { useEffect } from "react";
+
+interface ReceiptModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  studentName: string;
+  amount: string;
+  date: string;
+  note: string | null;
+  paymentId: string;
+}
+
+export function ReceiptModal({
+  isOpen,
+  onClose,
+  studentName,
+  amount,
+  date,
+  note,
+  paymentId,
+}: ReceiptModalProps) {
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const formattedAmount = new Intl.NumberFormat("es-DO", {
+    style: "currency",
+    currency: "DOP",
+  }).format(Number(amount));
+
+  return (
+    <div className="modal-backdrop" onClick={onClose} role="presentation">
+      <div
+        className="panel modal-card receipt-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="receipt-title"
+      >
+        <div className="modal-header">
+          <h3 id="receipt-title" className="modal-title">
+            Recibo de Transacci\xF3n
+          </h3>
+          <button
+            type="button"
+            className="modal-close-btn"
+            onClick={onClose}
+            aria-label="Cerrar ventana"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="modal-body">
+          <div className="receipt-content">
+            <div className="receipt-header">
+              <span className="receipt-institution">PagaTiempo</span>
+              <span className="receipt-date">{new Date(date).toLocaleDateString(
+                "es-DO",
+              )}</span>
+            </div>
+
+            <div className="receipt-student-info">
+              <strong>Estudiante:</strong> {studentName}
+            </div>
+
+            <div className="receipt-divider" />
+
+            <div className="receipt-amount">
+              <span className="receipt-amount-label">Monto</span>
+              <span className="receipt-amount-value">{formattedAmount}</span>
+            </div>
+
+            {note ? (
+              <div className="receipt-note">
+                <span className="receipt-note-label">Nota:</span>
+                <span className="receipt-note-text">{note}</span>
+              </div>
+            ) : null}
+
+            <div className="receipt-payment-id">
+              <span className="receipt-id-label">ID de Pago:</span>
+              <span className="receipt-id-value">{paymentId}</span>
+            </div>
+
+            <div className="receipt-footer">
+              <p className="receipt-thank-you">
+                Gracias por su pago. Que tenga un buen d\xEDa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
