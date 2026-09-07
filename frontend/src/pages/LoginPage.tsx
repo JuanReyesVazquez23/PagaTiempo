@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { ApiError, login } from "../lib/api";
 
@@ -68,6 +68,10 @@ export function LoginPage() {
           <button type="submit" className="btn-primary login-btn">
             Entrar al Libro de Cuotas →
           </button>
+
+          <p className="hint" style={{ textAlign: "center", marginTop: "1rem" }}>
+            <Link to="/admin">Acceso de administrador</Link>
+          </p>
         </form>
       </div>
     </main>

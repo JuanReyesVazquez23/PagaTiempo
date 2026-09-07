@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 import { PaymentLedger } from "../components/features/PaymentLedger";
 import { StudentSearch } from "../components/features/StudentSearch";
-import { Modal } from "../components/ui/MonthGrid";
+import { Modal } from "../components/ui/Modal";
 import { MonthGrid } from "../components/ui/MonthGrid";
 import {
+  ApiError,
   createStudent,
   deleteStudent,
+  exitAdminMode,
   fetchMe,
   fetchStudent,
   logout,
@@ -38,6 +40,9 @@ export function DashboardPage() {
 
   const [showResetAllModal, setShowResetAllModal] = useState(false);
   const [resetAllError, setResetAllError] = useState<string | null>(null);
+
+  const [showPWAInstall, setShowPWAInstall] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     let active = true;
@@ -71,9 +76,48 @@ export function DashboardPage() {
       .catch(() => setLoadError("No se pudo abrir el historial"));
   }, [selectedId, refreshKey]);
 
+  // Este efecto estaba después del "if (checkingSession) return" de abajo.
+  // Eso significa que en el primer render (checkingSession = true) React
+  // nunca llegaba a ejecutar este hook, pero en el siguiente render
+  // (checkingSession = false) sí — un componente que llama a un número
+  // distinto de hooks entre renders viola las Reglas de los Hooks y es
+  // justo lo que producía el error #310 al terminar de loguearse.
+  useEffect(() => {
+    const handleBeforeInstall = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event);
+      setShowPWAInstall(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+    };
+  }, []);
+
   async function onLogout(): Promise<void> {
     await logout();
     navigate("/");
+  }
+
+  async function handleExitAdmin(): Promise<void> {
+    try {
+      await exitAdminMode();
+      setRole("treasurer");
+    } catch {
+      // Si falla, dejamos el rol como estaba — mejor que la UI diga
+      // "tesorera" mientras la cookie sigue en admin.
+    }
+  }
+
+  async function handleInstallClick(): Promise<void> {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
+    }
+    setShowPWAInstall(false);
   }
 
   async function handleCreateStudent(e: FormEvent): Promise<void> {
@@ -168,8 +212,8 @@ export function DashboardPage() {
             <h1>Libro de Cuotas</h1>
           </div>
         </div>
-        <div className="topbar-actions">
-          {isAdmin ? (
+<div className="topbar-actions">
+{role === "admin" ? (
             <>
               <span className="role-tag admin-tag">👑 Administrador</span>
               <button
@@ -186,7 +230,7 @@ export function DashboardPage() {
               <button
                 type="button"
                 className="btn-ghost"
-                onClick={() => setRole("treasurer")}
+                onClick={handleExitAdmin}
                 title="Volver modo tesorera"
               >
                 Salir de Admin
@@ -196,6 +240,23 @@ export function DashboardPage() {
             <>
               <span className="role-tag">Tesorera</span>
             </>
+          )}
+          {showPWAInstall ? (
+            <button
+              onClick={() => setShowPWAInstall(false)}
+              className="pwa-install-btn"
+              aria-label="Cancelar instalación de PWA"
+            >
+              Cancelar
+            </button>
+          ) : (
+            <button
+              onClick={handleInstallClick}
+              className="pwa-install-btn"
+              aria-label="Agregar PagaTiempo a la pantalla principal"
+            >
+              Agregar a la pantalla principal
+            </button>
           )}
           <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
             Salir →
@@ -248,7 +309,7 @@ export function DashboardPage() {
               <div className="empty-hero-icon" aria-hidden="true">📋</div>
               <h3>Selecciona un estudiante</h3>
               <p className="hint">
-                Elige un nombre de la lista para ver su historial de pagos y cuotas.
+                Elige un nombre en la lista de la izquierda para ver su historial de 10 meses y registrar cuotas.
               </p>
               {isAdmin ? (
                 <button
@@ -265,7 +326,7 @@ export function DashboardPage() {
                 </button>
               ) : null}
             </div>
-          </div>
+          )}
         </div>
       </div>
 

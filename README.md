@@ -28,22 +28,25 @@ PIN demo: `2468`. UI: `http://localhost:5173`.
 
 Para Postgres en la nube, pega la URL en `backend/.env` (`postgresql://...`). Neon: añade `sslmode=require` si hace falta.
 
-## Despliegue: frontend en Netlify, backend en Vercel
+## Despliegue: frontend y backend en Vercel (dos proyectos separados)
 
-Es un repo con `frontend/` y `backend/` como carpetas hermanas, así que cada plataforma necesita apuntar a la suya:
+Es un repo con `frontend/` y `backend/` como carpetas hermanas. Cada uno se importa como un proyecto de Vercel **distinto** (mismo repositorio, distinto Root Directory).
 
-**Backend en Vercel**
+**Proyecto 1: backend**
 1. Nuevo proyecto → importa el repo → en **Root Directory** pon `backend`.
 2. Vercel detecta FastAPI solo (usa `app/main.py` y `requirements.txt`, sin configuración extra).
-3. Variables de entorno del proyecto (Vercel, no Netlify): `DATABASE_URL`, `TREASURER_PIN`, `ADMIN_KEY`, `SECRET_KEY`, `CORS_ORIGINS`, `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none` — ver los comentarios en `backend/.env.example`.
+3. Variables de entorno **de este proyecto**: `DATABASE_URL`, `TREASURER_PIN`, `ADMIN_KEY`, `SECRET_KEY`, `CORS_ORIGINS`, `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none` — ver los comentarios en `backend/.env.example`.
 4. Si usas Neon, copia el endpoint agrupado (el que trae `-pooler` en el host) como `DATABASE_URL`: el backend corre como funciones serverless y ese endpoint evita agotar las conexiones.
 
-**Frontend en Netlify**
-1. Nuevo sitio → importa el repo → en **Base directory** pon `frontend` (ahí vive `netlify.toml`, que ya trae el build command y el redirect de SPA).
-2. En `frontend/netlify.toml`, reemplaza la URL de ejemplo del bloque `[[redirects]] from = "/api/*"` por la URL real de tu backend en Vercel. Este proxy es lo que hace que el login funcione también en Safari/iOS (ver el comentario de ese archivo).
-3. Deja `VITE_API_BASE_URL` vacía (o sin definir) en las variables de entorno del sitio en Netlify — con el proxy de arriba activo, definirla rompe el login en Safari/iOS.
+**Proyecto 2: frontend**
+1. Nuevo proyecto aparte → importa el mismo repo → en **Root Directory** pon `frontend`.
+2. Vercel detecta Vite solo. `frontend/vercel.json` ya trae el proxy `/api/*` hacia el backend (evita CORS y el bloqueo de cookies "de terceros" en Safari/iOS) y el rewrite de SPA para que `/panel` no dé 404 al recargar.
+3. Si el nombre de tu proyecto del backend no es `pagatiempobackend`, edita la URL dentro de `frontend/vercel.json` antes de desplegar.
+4. Con el proxy activo **no hace falta** definir `VITE_API_BASE_URL` — déjala vacía.
 
-**Orden recomendado:** despliega primero el backend para tener su URL, ponla en el `[[redirects]]` de `frontend/netlify.toml` y despliega el frontend, y por último vuelve a Vercel y pon la URL final de Netlify en `CORS_ORIGINS` (puede pedir un redeploy del backend para que tome el cambio).
+**Orden recomendado:** despliega primero el backend para confirmar su URL (ajústala en `frontend/vercel.json` si hace falta) y luego el frontend. `CORS_ORIGINS` en el backend puedes dejarlo con la URL del frontend de todas formas, como respaldo por si algo llama a la API directo sin pasar por el proxy.
+
+`frontend/netlify.toml` se queda en el repo por si en algún momento despliegas ahí — Vercel lo ignora, así que no interfiere.
 
 ## Modos de Acceso: Tesorera y Administrador
 
@@ -53,4 +56,4 @@ Es un repo con `frontend/` y `backend/` como carpetas hermanas, así que cada pl
   - **Eliminar estudiantes:** Elimina al estudiante y todo su historial de cuotas/pagos asociados de manera permanente.
   - **Limpiar cuentas:** Restablece las cuotas a 0.00 pagado y elimina los pagos registrados, ya sea para un estudiante individual o para todo el ciclo escolar.
 
-Tanto el PIN (`TREASURER_PIN`) como la contraseña de administrador (`ADMIN_KEY`) y la clave de firmado (`SECRET_KEY`) se configuran únicamente en Vercel como variables de entorno privadas; nunca deben ir en variables `VITE_...` en Netlify ni exponerse en el frontend.
+Tanto el PIN (`TREASURER_PIN`) como la contraseña de administrador (`ADMIN_KEY`) y la clave de firmado (`SECRET_KEY`) se configuran únicamente en el proyecto del backend en Vercel, como variables de entorno privadas; nunca deben ir en variables `VITE_...` en el proyecto del frontend ni exponerse ahí. Se entra al modo administrador desde el enlace "Acceso de administrador" al pie de la pantalla de login (`/admin`).
