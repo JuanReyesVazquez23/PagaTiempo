@@ -1,4 +1,4 @@
-﻿// PagaTiempo Service Worker
+// PagaTiempo Service Worker
 // Estrategia: Cache-first para assets, network-first para API
 
 const CACHE_NAME = "pagatiempo-v1";

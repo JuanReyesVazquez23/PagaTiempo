@@ -1,8 +1,9 @@
-import { FormEvent, useEffect, useState } from "react";
+﻿import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { PaymentLedger } from "../components/features/PaymentLedger";
 import { StudentSearch } from "../components/features/StudentSearch";
+import { Logo } from "../components/Logo";
 import { Modal } from "../components/ui/Modal";
 import { MonthGrid } from "../components/ui/MonthGrid";
 import {
@@ -41,17 +42,12 @@ export function DashboardPage() {
   const [showResetAllModal, setShowResetAllModal] = useState(false);
   const [resetAllError, setResetAllError] = useState<string | null>(null);
 
-  const [showPWAInstall, setShowPWAInstall] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
-
+  // Verificar sesion activa al montar
   useEffect(() => {
     let active = true;
     fetchMe()
       .then((data) => {
-        if (active) {
-          setRole(data.role);
-        }
+        if (active) setRole(data.role);
       })
       .catch(() => {
         if (active) navigate("/", { replace: true });
@@ -59,11 +55,10 @@ export function DashboardPage() {
       .finally(() => {
         if (active) setCheckingSession(false);
       });
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [navigate]);
 
+  // Cargar detalle del estudiante seleccionado
   useEffect(() => {
     if (!selectedId) {
       setDetail(null);
@@ -77,38 +72,6 @@ export function DashboardPage() {
       .catch(() => setLoadError("No se pudo abrir el historial"));
   }, [selectedId, refreshKey]);
 
-  // Este efecto estaba después del "if (checkingSession) return" de abajo.
-  // Eso significa que en el primer render (checkingSession = true) React
-  // nunca llegaba a ejecutar este hook, pero en el siguiente render
-  // (checkingSession = false) sí — un componente que llama a un número
-  // distinto de hooks entre renders viola las Reglas de los Hooks y es
-  // justo lo que producía el error #310 al terminar de loguearse.
-  useEffect(() => {
-    const handleBeforeInstall = (event: Event) => {
-      event.preventDefault();
-      setDeferredPrompt(event);
-      setShowPWAInstall(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleAppInstalled = () => {
-      setIsPWAInstalled(true);
-    };
-
-    window.addEventListener("appinstalled", handleAppInstalled);
-
-    return () => {
-      window.removeEventListener("appinstalled", handleAppInstalled);
-    };
-  }, []);
-
   async function onLogout(): Promise<void> {
     await logout();
     navigate("/");
@@ -119,22 +82,7 @@ export function DashboardPage() {
       await exitAdminMode();
       setRole("treasurer");
     } catch {
-      // Si falla, dejamos el rol como estaba — mejor que la UI diga
-      // "tesorera" mientras la cookie sigue en admin.
-    }
-  }
-
-  async function handleInstallClick(): Promise<void> {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      setDeferredPrompt(null);
-      setShowPWAInstall(false);
-      setIsPWAInstalled(true);
-    } else if (isPWAInstalled) {
-      setShowPWAInstall(false);
-    } else {
-      setShowPWAInstall(true);
+      // Si falla, dejamos el rol como estaba
     }
   }
 
@@ -148,7 +96,7 @@ export function DashboardPage() {
       setRefreshKey((k) => k + 1);
       setSelectedId(created.id);
       setDetail(created);
-      setActionNotice(`Estudiante "${created.full_name}" agregado con éxito`);
+      setActionNotice(`Estudiante "${created.full_name}" agregado con exito`);
       setTimeout(() => setActionNotice(null), 4000);
     } catch (cause: unknown) {
       setNewStudentError(cause instanceof ApiError ? cause.message : "No se pudo agregar al estudiante");
@@ -207,7 +155,10 @@ export function DashboardPage() {
   if (checkingSession) {
     return (
       <main className="shell">
-        <p className="panel empty">Verificando sesión…</p>
+        <div className="checking-session">
+          <div className="checking-spinner" aria-hidden="true" />
+          <p>Verificando sesion…</p>
+        </div>
       </main>
     );
   }
@@ -224,16 +175,17 @@ export function DashboardPage() {
 
       <header className="topbar">
         <div className="topbar-brand">
-          <div className="brand-badge" aria-hidden="true">PT</div>
+          <Logo size={40} />
           <div>
             <span className="eyebrow">Ciclo Sep 2026 — Jun 2027</span>
             <h1>Libro de Cuotas</h1>
           </div>
         </div>
-<div className="topbar-actions">
-{role === "admin" ? (
+
+        <div className="topbar-actions">
+          {isAdmin ? (
             <>
-              <span className="role-tag admin-tag">👑 Administrador</span>
+              <span className="role-tag admin-tag">👑 Admin</span>
               <button
                 type="button"
                 className="btn-ghost btn-warn-ghost"
@@ -243,7 +195,7 @@ export function DashboardPage() {
                 }}
                 title="Limpiar y reiniciar todas las cuentas del ciclo"
               >
-                Limpiar todo el ciclo
+                Limpiar ciclo
               </button>
               <button
                 type="button"
@@ -251,54 +203,25 @@ export function DashboardPage() {
                 onClick={handleExitAdmin}
                 title="Volver modo tesorera"
               >
-                Salir de Admin
+                Salir Admin
               </button>
             </>
           ) : (
-            <>
-              <span className="role-tag">Tesorera</span>
-            </>
+            <span className="role-tag">Tesorera</span>
           )}
-{showPWAInstall ? (
-            <button
-              onClick={() => setShowPWAInstall(false)}
-              className="pwa-install-btn"
-              aria-label="Cancelar instalación de PWA"
-            >
-              Cancelar
-            </button>
-          ) : isPWAInstalled ? (
-            <button
-              onClick={() => {
-                if (window.confirm("¿Quitar PagaTiempo de la pantalla principal?")) {
-                  // Trigger uninstall - try to unregister service workers if available
-                  if (navigator.serviceWorker) {
-                    navigator.serviceWorker.getRegistrations().then((registrations) => {
-                      for (const registration of registrations) {
-                        registration.unregister();
-                      }
-                    });
-                  }
-                  setIsPWAInstalled(false);
-                  setShowPWAInstall(false);
-                }
-              }}
-              className="pwa-install-btn"
-              aria-label="Quitar de la pantalla principal"
-            >
-              Quitar de la pantalla principal
-            </button>
-          ) : (
-            <button
-              onClick={handleInstallClick}
-              className="pwa-install-btn"
-              aria-label="Agregar PagaTiempo a la pantalla principal"
-            >
-              Agregar a la pantalla principal
-            </button>
-          )}
-          <button type="button" className="btn-ghost" onClick={onLogout} aria-label="Cerrar sesión">
-            Salir →
+          <button
+            type="button"
+            className="btn-ghost logout-btn"
+            onClick={onLogout}
+            aria-label="Cerrar sesion"
+            title="Cerrar sesion"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span className="logout-label">Salir</span>
           </button>
         </div>
       </header>
@@ -348,7 +271,7 @@ export function DashboardPage() {
               <div className="empty-hero-icon" aria-hidden="true">📋</div>
               <h3>Selecciona un estudiante</h3>
               <p className="hint">
-                Elige un nombre en la lista de la izquierda para ver su historial de 10 meses y registrar cuotas.
+                Elige un nombre en la lista para ver su historial de 10 meses y registrar cuotas.
               </p>
               {isAdmin ? (
                 <button
@@ -377,7 +300,7 @@ export function DashboardPage() {
       >
         <form onSubmit={handleCreateStudent}>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            El nuevo estudiante será incorporado con sus 10 cuotas correspondientes al ciclo escolar.
+            El nuevo estudiante sera incorporado con sus 10 cuotas correspondientes al ciclo escolar.
           </p>
           <div className="field">
             <label htmlFor="new-student-name">Nombre completo del estudiante</label>
@@ -390,7 +313,7 @@ export function DashboardPage() {
               maxLength={120}
               value={newStudentName}
               onChange={(e) => setNewStudentName(e.target.value)}
-              placeholder="Ej. Ana Lucía Martínez"
+              placeholder="Ej. Ana Lucia Martinez"
               className="neu-input"
             />
           </div>
@@ -422,11 +345,11 @@ export function DashboardPage() {
       >
         <div>
           <p style={{ marginBottom: "1rem" }}>
-            ¿Estás seguro de que deseas limpiar la cuenta de{" "}
+            Estas seguro de que deseas limpiar la cuenta de{" "}
             <strong>{detail?.full_name}</strong>?
           </p>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            ⚠️ Se eliminarán todos los pagos registrados de este estudiante y todas sus cuotas mensuales volverán a estar pendientes (0.00 DOP).
+            Se eliminaran todos los pagos registrados de este estudiante y todas sus cuotas mensuales volvaran a estar pendientes (0.00 DOP).
           </p>
           {resetStudentError ? (
             <p className="alert" role="alert">
@@ -446,7 +369,7 @@ export function DashboardPage() {
               className="btn-danger"
               onClick={handleResetStudent}
             >
-              Sí, limpiar cuenta
+              Si, limpiar cuenta
             </button>
           </div>
         </div>
@@ -460,11 +383,11 @@ export function DashboardPage() {
       >
         <div>
           <p style={{ marginBottom: "1rem" }}>
-            ¿Estás seguro de que deseas eliminar permanentemente a{" "}
+            Estas seguro de que deseas eliminar permanentemente a{" "}
             <strong>{detail?.full_name}</strong>?
           </p>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            🚨 Se eliminará al estudiante junto con sus 10 cuotas y todo su historial de recibos. Esta acción no se puede deshacer.
+            Se eliminara al estudiante junto con sus 10 cuotas y todo su historial de recibos. Esta accion no se puede deshacer.
           </p>
           {deleteStudentError ? (
             <p className="alert" role="alert">
@@ -484,7 +407,7 @@ export function DashboardPage() {
               className="btn-danger"
               onClick={handleDeleteStudent}
             >
-              Sí, eliminar definitivamente
+              Si, eliminar definitivamente
             </button>
           </div>
         </div>
@@ -498,10 +421,10 @@ export function DashboardPage() {
       >
         <div>
           <p style={{ marginBottom: "1rem" }}>
-            ¿Estás seguro de que deseas <strong>limpiar las cuentas de todos los estudiantes</strong>?
+            Estas seguro de que deseas <strong>limpiar las cuentas de todos los estudiantes</strong>?
           </p>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            🚨 Esta acción borrará el historial de pagos completo de toda la institución y dejará las cuotas de todos los estudiantes en estado pendiente (0.00 DOP).
+            Esta accion borrara el historial de pagos completo de toda la institucion y dejara las cuotas de todos los estudiantes en estado pendiente (0.00 DOP).
           </p>
           {resetAllError ? (
             <p className="alert" role="alert">
@@ -521,7 +444,7 @@ export function DashboardPage() {
               className="btn-danger"
               onClick={handleResetAll}
             >
-              Sí, limpiar todo el ciclo
+              Si, limpiar todo el ciclo
             </button>
           </div>
         </div>

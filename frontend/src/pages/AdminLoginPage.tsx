@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ApiError, adminLogin } from "../lib/api";
+import { Logo } from "../components/Logo";
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export function AdminLoginPage() {
       <div className="login-wrapper">
         <header className="hero login-hero">
           <div className="login-brand-pill">
-            <span className="brand-badge" aria-hidden="true">PT</span>
+            <Logo size={28} className="brand-badge" />
             <span className="eyebrow">Gestión Central · Modo Admin</span>
           </div>
           <h1>PagaTiempo</h1>

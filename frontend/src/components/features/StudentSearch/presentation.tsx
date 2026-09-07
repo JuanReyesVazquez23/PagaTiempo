@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 export interface StudentRow {
   id: string;
   full_name: string;
@@ -28,6 +30,8 @@ function getInitials(name: string): string {
     .join("");
 }
 
+const VISIBLE_LIMIT = 3;
+
 export function StudentSearchPresentation({
   query,
   deferredQuery,
@@ -40,6 +44,17 @@ export function StudentSearchPresentation({
   onQueryChange,
   onSelect,
 }: StudentSearchPresentationProps) {
+  const [expanded, setExpanded] = useState(false);
+
+  // Si el resultado de la búsqueda cambia, volvemos a mostrar solo los
+  // primeros 3 — evita que quede "expandido" mostrando una lista vieja.
+  useEffect(() => {
+    setExpanded(false);
+  }, [deferredQuery]);
+
+  const hasMore = students.length > VISIBLE_LIMIT;
+  const visibleStudents = expanded ? students : students.slice(0, VISIBLE_LIMIT);
+
   return (
     <section className="panel search-panel" aria-labelledby="search-heading">
       <div className="panel-header">
@@ -96,7 +111,7 @@ export function StudentSearchPresentation({
       ) : null}
 
       <ul className="student-list" aria-label="Lista de estudiantes">
-        {students.map((student) => {
+        {visibleStudents.map((student) => {
           const isSelected = selectedId === student.id;
           const paid = parseFloat(student.total_paid) || 0;
           const total = parseFloat(student.total_expected) || 0;
@@ -131,6 +146,16 @@ export function StudentSearchPresentation({
           );
         })}
       </ul>
+
+      {hasMore ? (
+        <button
+          type="button"
+          className="btn-ghost btn-sm show-more-btn"
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Ver menos ↑" : `Ver más (${students.length - VISIBLE_LIMIT}) ↓`}
+        </button>
+      ) : null}
 
       {!loading && students.length === 0 ? (
         <div className="empty-state">
