@@ -1432,3 +1432,120 @@ select:focus-visible {
   gap: 0.75rem;
   margin-top: 1.25rem;
 }
+
+/* ==========================================================================
+   PWA INSTALL BUTTON (Floating Action Button)
+   ========================================================================== */
+
+.pwa-install-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  filter: drop-shadow(4px 4px 0px rgba(15, 23, 42, 0.85));
+  animation: pwa-fab-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pwa-fab-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.pwa-install-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.1rem;
+  background: var(--border-strong);
+  color: var(--text-inverse);
+  border: 2.5px solid var(--border-strong);
+  border-right: none;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  transition: background 0.13s ease, transform 0.12s ease;
+  box-shadow: none;
+  white-space: nowrap;
+}
+
+.pwa-install-btn:hover:not(:disabled) {
+  background: #1e293b;
+  transform: translate(-1px, -1px);
+}
+
+.pwa-install-btn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+}
+
+.pwa-install-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pwa-install-label {
+  display: inline;
+}
+
+.pwa-install-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  min-width: 36px;
+  height: 44px;
+  padding: 0;
+  background: #334155;
+  color: rgba(255, 255, 255, 0.8);
+  border: 2.5px solid var(--border-strong);
+  border-left: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  box-shadow: none;
+}
+
+.pwa-install-dismiss:hover:not(:disabled) {
+  background: #ef4444;
+  color: #ffffff;
+  transform: none;
+  box-shadow: none;
+}
+
+.pwa-install-dismiss:active:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 480px) {
+  .pwa-install-fab {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    justify-content: space-between;
+  }
+
+  .pwa-install-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .pwa-install-dismiss {
+    width: 44px;
+    min-width: 44px;
+  }
+}

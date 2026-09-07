@@ -1,0 +1,28 @@
+﻿{
+  "name": "PagaTiempo",
+  "short_name": "PagaTiempo",
+  "description": "Libro de cuotas escolares para tesorera. Gestión ordenada de 10 meses de cuotas por estudiante.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#e9edf2",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["finance", "education", "productivity"],
+  "screenshots": []
+}

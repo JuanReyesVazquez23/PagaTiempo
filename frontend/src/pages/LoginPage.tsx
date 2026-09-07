@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { ApiError, login } from "../lib/api";
+import { Logo } from "../components/Logo";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export function LoginPage() {
       <div className="login-wrapper">
         <header className="hero login-hero">
           <div className="login-brand-pill">
-            <span className="brand-badge" aria-hidden="true">PT</span>
+            <Logo size={40} className="brand-badge" />
             <span className="eyebrow">Tesorera · Ciclo 10 meses</span>
           </div>
           <h1>PagaTiempo</h1>
