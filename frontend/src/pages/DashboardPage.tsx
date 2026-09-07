@@ -43,6 +43,7 @@ export function DashboardPage() {
 
   const [showPWAInstall, setShowPWAInstall] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isPWAInstalled, setIsPWAInstalled] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -96,6 +97,18 @@ export function DashboardPage() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleAppInstalled = () => {
+      setIsPWAInstalled(true);
+    };
+
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    return () => {
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
   async function onLogout(): Promise<void> {
     await logout();
     navigate("/");
@@ -116,8 +129,13 @@ export function DashboardPage() {
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
       setDeferredPrompt(null);
+      setShowPWAInstall(false);
+      setIsPWAInstalled(true);
+    } else if (isPWAInstalled) {
+      setShowPWAInstall(false);
+    } else {
+      setShowPWAInstall(true);
     }
-    setShowPWAInstall(false);
   }
 
   async function handleCreateStudent(e: FormEvent): Promise<void> {
@@ -241,13 +259,34 @@ export function DashboardPage() {
               <span className="role-tag">Tesorera</span>
             </>
           )}
-          {showPWAInstall ? (
+{showPWAInstall ? (
             <button
               onClick={() => setShowPWAInstall(false)}
               className="pwa-install-btn"
               aria-label="Cancelar instalación de PWA"
             >
               Cancelar
+            </button>
+          ) : isPWAInstalled ? (
+            <button
+              onClick={() => {
+                if (window.confirm("¿Quitar PagaTiempo de la pantalla principal?")) {
+                  // Trigger uninstall - try to unregister service workers if available
+                  if (navigator.serviceWorker) {
+                    navigator.serviceWorker.getRegistrations().then((registrations) => {
+                      for (const registration of registrations) {
+                        registration.unregister();
+                      }
+                    });
+                  }
+                  setIsPWAInstalled(false);
+                  setShowPWAInstall(false);
+                }
+              }}
+              className="pwa-install-btn"
+              aria-label="Quitar de la pantalla principal"
+            >
+              Quitar de la pantalla principal
             </button>
           ) : (
             <button
