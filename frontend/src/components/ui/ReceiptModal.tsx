@@ -48,7 +48,7 @@ export function ReceiptModal({
       >
         <div className="modal-header">
           <h3 id="receipt-title" className="modal-title">
-            Recibo de Transacci\xF3n
+            Recibo de Transaccion
           </h3>
           <button
             type="button"
@@ -93,7 +93,7 @@ export function ReceiptModal({
 
             <div className="receipt-footer">
               <p className="receipt-thank-you">
-                Gracias por su pago. Que tenga un buen d\xEDa.
+                Gracias por su pago.
               </p>
             </div>
           </div>
