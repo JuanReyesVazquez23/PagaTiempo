@@ -22,6 +22,7 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
     date: string;
     note: string | null;
     paymentId: string;
+    allocations: Array<{ month_index: number; amount: string }>;
   } | null>(null);
   const [optimisticStudent, addOptimistic] = useOptimistic(student);
 
@@ -57,6 +58,7 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
         date: new Date().toISOString(),
         note: note || null,
         paymentId: updated.payments.at(-1)?.id || `temp-${Date.now()}`,
+        allocations: updated.payments.at(-1)?.allocations || [],
       });
     } catch (cause: unknown) {
       const message = cause instanceof ApiError ? cause.message : "No se pudo guardar el pago";
@@ -84,6 +86,7 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
           date={receiptData!.date}
           note={receiptData!.note}
           paymentId={receiptData!.paymentId}
+          allocations={receiptData!.allocations}
         />
       )}
     </>

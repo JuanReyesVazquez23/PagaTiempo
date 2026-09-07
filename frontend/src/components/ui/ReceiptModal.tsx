@@ -8,6 +8,7 @@ interface ReceiptModalProps {
   date: string;
   note: string | null;
   paymentId: string;
+  allocations: Array<{ month_index: number; amount: string }>;
 }
 
 export function ReceiptModal({
@@ -18,6 +19,7 @@ export function ReceiptModal({
   date,
   note,
   paymentId,
+  allocations,
 }: ReceiptModalProps) {
   useEffect(() => {
     if (!isOpen) return;
@@ -62,7 +64,7 @@ export function ReceiptModal({
         <div className="modal-body">
           <div className="receipt-content">
             <div className="receipt-header">
-              <span className="receipt-institution">PagaTiempo</span>
+              <span className="receipt-institution">PagaTiempo </span>
               <span className="receipt-date">{new Date(date).toLocaleDateString(
                 "es-DO",
               )}</span>
@@ -78,6 +80,17 @@ export function ReceiptModal({
               <span className="receipt-amount-label">Monto</span>
               <span className="receipt-amount-value">{formattedAmount}</span>
             </div>
+
+            {allocations.length > 0 ? (
+              <div className="receipt-allocation">
+                <span className="receipt-allocation-label">Aplicado a:</span>
+                {allocations.map((item) => (
+                  <span key={item.month_index} className="receipt-allocation-chip">
+                    Mes {item.month_index} (${item.amount})
+                  </span>
+                ))}
+              </div>
+            ) : null}
 
             {note ? (
               <div className="receipt-note">
