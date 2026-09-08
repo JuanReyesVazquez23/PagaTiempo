@@ -1,6 +1,6 @@
 import { useOptimistic, useState } from "react";
 
-import { ApiError, createPayment, type StudentDetail } from "../../../lib/api";
+import { ApiError, createPayment, type Installment, type StudentDetail } from "../../../lib/api";
 import { PaymentLedgerPresentation } from "./presentation";
 import { ReceiptModal } from "../../../components/ui/ReceiptModal";
 
@@ -23,7 +23,7 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
     note: string | null;
     paymentId: string;
     allocations: Array<{ month_index: number; amount: string }>;
-    installments: Array<{ month_index: number; label: string; expected_amount: string }>;
+    installments: Installment[];
   } | null>(null);
   const [optimisticStudent, addOptimistic] = useOptimistic(student);
 
@@ -58,9 +58,9 @@ export function PaymentLedger({ student, onUpdated, isAdmin, onResetStudent, onD
         amount,
         date: new Date().toISOString(),
         note: note || null,
-        paymentId: updated.payments.at(-1)?.id || `temp-${Date.now()}`,
-        allocations: updated.payments.at(-1)?.allocations || [],
-        installments: student.installments,
+        paymentId: updated.payments[0]?.id || `temp-${Date.now()}`,
+        allocations: updated.payments[0]?.allocations || [],
+        installments: updated.installments,
       });
     } catch (cause: unknown) {
       const message = cause instanceof ApiError ? cause.message : "No se pudo guardar el pago";

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 
+import type { Installment } from "../../lib/api";
+
 interface ReceiptModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -9,7 +11,7 @@ interface ReceiptModalProps {
   note: string | null;
   paymentId: string;
   allocations: Array<{ month_index: number; amount: string }>;
-  installments: Array<{ month_index: number; label: string; expected_amount: string }>;
+  installments: Installment[];
 }
 
 export function ReceiptModal({
@@ -86,27 +88,17 @@ export function ReceiptModal({
             {allocations.length > 0 ? (
               <div className="receipt-allocation">
                 <span className="receipt-allocation-label">Detalle de asignación:</span>
-{allocations.map((alloc) => {
+                {allocations.map((alloc, index) => {
                   const installment = installments.find(
                     (inst) => inst.month_index === alloc.month_index,
                   );
-                  const expected = installment ? parseFloat(installment.expected_amount) : 0;
-                  const paid = parseFloat(alloc.amount);
-                  // Full payment: allocated amount covers or exceeds expected amount
-                  // Partial payment: allocated amount is less than expected
-                  const isFullPayment = !installment || paid >= expected;
                   const monthLabel = installment ? installment.label : `Mes ${alloc.month_index}`;
+                  const remainingAfterPayment = installment ? Number(installment.remaining) : 0;
+                  const isPartial = remainingAfterPayment > 0;
 
-                  if (isFullPayment) {
-                    return (
-                      <span key={alloc.month_index} className="receipt-allocation-chip">
-                        {alloc.amount} pago correspondientes al {monthLabel}
-                      </span>
-                    );
-                  }
                   return (
-                    <span key={alloc.month_index} className="receipt-allocation-chip">
-                      {alloc.amount} pago parcial correspondiente a {monthLabel}
+                    <span key={`${alloc.month_index}-${index}`} className="receipt-allocation-chip">
+                      {alloc.amount} {isPartial ? `pago parcial de ${monthLabel}` : `pago correspondiente a ${monthLabel}`}
                     </span>
                   );
                 })}

@@ -1,0 +1,29 @@
+# Skills, Prompts y configuraciones de agentes / IDE
+.cursor/
+*.agent.md
+
+# Variables de entorno y credenciales
+.env
+.env.*
+!.env.example
+*.local
+
+# Python / Entornos virtuales
+backend/.venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
