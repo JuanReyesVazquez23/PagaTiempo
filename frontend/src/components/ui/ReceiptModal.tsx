@@ -110,7 +110,7 @@ export function ReceiptModal({
                     {alloc.amount} {isPartial ? (
                       " pesos pagados parcialmente correpondientes a "
                     ) : " pesos pagados correspondientes a "
-                  }{monthLabel}</span>
+                  } {monthLabel} </span>
                 );
               })}
             </div>
