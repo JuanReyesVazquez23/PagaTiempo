@@ -303,7 +303,7 @@ export function DashboardPage() {
             El nuevo estudiante sera incorporado con sus 10 cuotas correspondientes al ciclo escolar.
           </p>
           <div className="field">
-            <label htmlFor="new-student-name">Nombre completo del estudiante</label>
+            <label htmlFor="new-student-name">Nombre del estudiante</label>
             <input
               id="new-student-name"
               type="text"

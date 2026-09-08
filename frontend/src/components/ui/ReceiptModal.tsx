@@ -9,6 +9,7 @@ interface ReceiptModalProps {
   note: string | null;
   paymentId: string;
   allocations: Array<{ month_index: number; amount: string }>;
+  installments: Array<{ month_index: number; label: string; expected_amount: string }>;
 }
 
 export function ReceiptModal({
@@ -20,6 +21,7 @@ export function ReceiptModal({
   note,
   paymentId,
   allocations,
+  installments,
 }: ReceiptModalProps) {
   useEffect(() => {
     if (!isOpen) return;
@@ -83,12 +85,29 @@ export function ReceiptModal({
 
             {allocations.length > 0 ? (
               <div className="receipt-allocation">
-                <span className="receipt-allocation-label">Aplicado a:</span>
-                {allocations.map((item) => (
-                  <span key={item.month_index} className="receipt-allocation-chip">
-                    Mes {item.month_index} (${item.amount})
-                  </span>
-                ))}
+                <span className="receipt-allocation-label">Detalle de asignación:</span>
+{allocations.map((alloc) => {
+                  const installment = installments.find(
+                    (inst) => inst.month_index === alloc.month_index,
+                  );
+                  const expected = installment ? parseFloat(installment.expected_amount) : null;
+                  const paid = parseFloat(alloc.amount);
+                  const isFullPayment = expected !== null && Math.abs(paid - expected) < 0.01;
+                  const monthLabel = installment ? installment.label : `Mes ${alloc.month_index}`;
+
+                  if (isFullPayment) {
+                    return (
+                      <span key={alloc.month_index} className="receipt-allocation-chip">
+                        {alloc.amount} pago correspondientes al {monthLabel}
+                      </span>
+                    );
+                  }
+                  return (
+                    <span key={alloc.month_index} className="receipt-allocation-chip">
+                      {alloc.amount} pago parcial de {monthLabel}
+                    </span>
+                  );
+                })}
               </div>
             ) : null}
 
