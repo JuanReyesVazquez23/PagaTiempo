@@ -90,9 +90,11 @@ export function ReceiptModal({
                   const installment = installments.find(
                     (inst) => inst.month_index === alloc.month_index,
                   );
-                  const expected = installment ? parseFloat(installment.expected_amount) : null;
+                  const expected = installment ? parseFloat(installment.expected_amount) : 0;
                   const paid = parseFloat(alloc.amount);
-                  const isFullPayment = expected !== null && Math.abs(paid - expected) < 0.01;
+                  // Full payment: allocated amount covers or exceeds expected amount
+                  // Partial payment: allocated amount is less than expected
+                  const isFullPayment = !installment || paid >= expected;
                   const monthLabel = installment ? installment.label : `Mes ${alloc.month_index}`;
 
                   if (isFullPayment) {
@@ -104,7 +106,7 @@ export function ReceiptModal({
                   }
                   return (
                     <span key={alloc.month_index} className="receipt-allocation-chip">
-                      {alloc.amount} pago parcial de {monthLabel}
+                      {alloc.amount} pago parcial correspondiente a {monthLabel}
                     </span>
                   );
                 })}
