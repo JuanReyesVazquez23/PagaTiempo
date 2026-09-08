@@ -60,7 +60,11 @@ def create_student(
         .options(selectinload(Student.installments), selectinload(Student.payments))
         .where(Student.id == student.id)
     )
-    assert loaded is not None
+    if loaded is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno: no se pudo cargar el estudiante creado",
+        )
     return _detail(loaded)
 
 
@@ -109,7 +113,11 @@ def reset_student_account(
         .options(selectinload(Student.installments), selectinload(Student.payments))
         .where(Student.id == student_id)
     )
-    assert reloaded is not None
+    if reloaded is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno: no se pudo recargar la cuenta del estudiante",
+        )
     return _detail(reloaded)
 
 

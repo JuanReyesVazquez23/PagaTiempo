@@ -1,50 +1,49 @@
-"""Limitador de intentos en memoria para el login de la tesorera.
+"""Limitador de intentos persistente para el login de la tesorera.
 
-El PIN es corto (4+ dígitos) y se compara con secrets.compare_digest,
-pero sin un límite de intentos alguien podría probar miles de PIN por
-minuto. Esto acota los intentos por IP con una ventana deslizante.
+Usa PostgreSQL para guardar los intentos, lo que funciona correctamente
+en entornos serverless (Vercel) donde la memoria no se comparte entre
+invocaciones.
 
-No es distribuido: sirve para una sola instancia del backend (un
-servicio de Railway). Si en el futuro corres varias instancias detrás
-de un balanceador, esto habría que moverlo a un store compartido
-(p. ej. Redis) para que el límite aplique entre todas.
+La tabla ``rate_limit_attempts`` se crea automáticamente en el startup
+(via ``seed.ensure_rate_limit_table``).
 """
 
 from __future__ import annotations
 
 import time
-from collections import defaultdict, deque
-from threading import Lock
+
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 MAX_ATTEMPTS = 5
 WINDOW_SECONDS = 60.0
 
-_attempts: dict[str, deque[float]] = defaultdict(deque)
-_lock = Lock()
+
+def is_rate_limited(db: Session, key: str) -> bool:
+    """Registra un intento para ``key`` y dice si ya superó el límite."""
+    now = time.time()
+    cutoff = now - WINDOW_SECONDS
+
+    db.execute(text("DELETE FROM rate_limit_attempts WHERE attempted_at < :cutoff"), {"cutoff": cutoff})
+
+    count = db.scalar(
+        text("SELECT COUNT(*) FROM rate_limit_attempts WHERE client_key = :key AND attempted_at >= :cutoff"),
+        {"key": key, "cutoff": cutoff},
+    ) or 0
+
+    if count >= MAX_ATTEMPTS:
+        db.commit()
+        return True
+
+    db.execute(
+        text("INSERT INTO rate_limit_attempts (client_key, attempted_at) VALUES (:key, :now)"),
+        {"key": key, "now": now},
+    )
+    db.commit()
+    return False
 
 
-def _prune(bucket: deque[float], now: float) -> None:
-    while bucket and now - bucket[0] > WINDOW_SECONDS:
-        bucket.popleft()
-
-
-def is_rate_limited(key: str, now: float | None = None) -> bool:
-    """Registra un intento para `key` y dice si ya superó el límite.
-
-    `now` solo existe para poder probar la función de forma
-    determinista; en uso real siempre se toma el reloj actual.
-    """
-    current = time.monotonic() if now is None else now
-    with _lock:
-        bucket = _attempts[key]
-        _prune(bucket, current)
-        if len(bucket) >= MAX_ATTEMPTS:
-            return True
-        bucket.append(current)
-        return False
-
-
-def reset(key: str) -> None:
-    """Limpia los intentos de `key` (se llama tras un login correcto)."""
-    with _lock:
-        _attempts.pop(key, None)
+def reset(db: Session, key: str) -> None:
+    """Limpia los intentos de ``key`` (se llama tras un login correcto)."""
+    db.execute(text("DELETE FROM rate_limit_attempts WHERE client_key = :key"), {"key": key})
+    db.commit()

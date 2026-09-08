@@ -192,5 +192,9 @@ def add_payment(
         .options(selectinload(Student.installments), selectinload(Student.payments))
         .where(Student.id == student_id)
     )
-    assert student is not None
+    if student is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno: no se pudo recargar el estudiante después del pago",
+        )
     return _detail(student)

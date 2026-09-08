@@ -23,17 +23,18 @@ def login(
     body: LoginRequest,
     request: Request,
     response: Response,
+    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> dict[str, str]:
     client_key = _client_key(request)
-    if is_rate_limited(client_key):
+    if is_rate_limited(db, client_key):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
         )
     if not secrets.compare_digest(body.pin, settings.treasurer_pin):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="PIN incorrecto")
-    reset_rate_limit(client_key)
+    reset_rate_limit(db, client_key)
     create_session_cookie(response, settings, role="treasurer")
     return {"status": "ok", "role": "treasurer"}
 
@@ -43,10 +44,11 @@ def admin_login(
     body: AdminLoginRequest,
     request: Request,
     response: Response,
+    db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> dict[str, str]:
     client_key = _client_key(request)
-    if is_rate_limited(client_key):
+    if is_rate_limited(db, client_key):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
@@ -61,7 +63,7 @@ def admin_login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Contraseña de administrador incorrecta",
         )
-    reset_rate_limit(client_key)
+    reset_rate_limit(db, client_key)
     create_session_cookie(response, settings, role="admin")
     return {"status": "ok", "role": "admin"}
 

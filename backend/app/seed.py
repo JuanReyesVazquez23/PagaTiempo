@@ -15,6 +15,22 @@ def ensure_extensions(db: Session) -> None:
     db.commit()
 
 
+def ensure_rate_limit_table(db: Session) -> None:
+    db.execute(
+        text(
+            "CREATE TABLE IF NOT EXISTS rate_limit_attempts ("
+            "  id SERIAL PRIMARY KEY,"
+            "  client_key TEXT NOT NULL,"
+            "  attempted_at DOUBLE PRECISION NOT NULL"
+            ")"
+        )
+    )
+    db.execute(
+        text("CREATE INDEX IF NOT EXISTS idx_rate_limit_key_time ON rate_limit_attempts (client_key, attempted_at)")
+    )
+    db.commit()
+
+
 def seed_if_empty(db: Session, settings: Settings) -> None:
     existing = db.scalar(select(Student.id).limit(1))
     if existing is not None:
