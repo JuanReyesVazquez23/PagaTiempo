@@ -67,26 +67,28 @@ export function ReceiptModal({
         </div>
 
         <div className="modal-body">
-          <div className="receipt-header">
-            <span className="receipt-institution">PagaTiempo</span>
-            <span className="receipt-date">{new Date(date).toLocaleDateString(
-              "es-DO",
-            )}</span>
+          <div className="receipt-section top-section">
+            <div className="receipt-header">
+              <span className="receipt-institution">PagaTiempo </span>
+              <span className="receipt-date">{new Date(date).toLocaleDateString(
+                "es-DO",
+              )}</span>
+            </div>
+
+            <div className="receipt-student-info">
+              <strong>Estudiante:</strong> {studentName}
+            </div>
           </div>
 
-          <div className="receipt-student-info">
-            <strong>Estudiante:</strong> {studentName}
-          </div>
-
-          <div className="receipt-divider" />
-
-          <div className="receipt-amount">
-            <span className="receipt-amount-label">Monto pagado</span>
-            <span className="receipt-amount-value">{formattedAmount}</span>
+          <div className="receipt-section amount-section">
+            <div className="receipt-amount">
+              <span className="receipt-amount-label">Monto pagado</span>
+              <span className="receipt-amount-value">{formattedAmount}</span>
+            </div>
           </div>
 
           {allocations.length > 0 ? (
-            <div className="receipt-allocation">
+            <div className="receipt-section allocation-section">
               <span className="receipt-allocation-label">Desglose de pago:</span>
               {allocations.map((alloc, index) => {
                 const installment = installments.find(
@@ -106,8 +108,8 @@ export function ReceiptModal({
                     className="receipt-allocation-chip"
                   >
                     {alloc.amount} {isPartial ? (
-                      "pago parcial de "
-                    ) : "pago correspondiente a "
+                      " pesos pagados parcialmente correpondientes a "
+                    ) : " pesos pagados correspondientes a "
                   }{monthLabel}</span>
                 );
               })}
@@ -115,18 +117,22 @@ export function ReceiptModal({
           ) : null}
 
           {note ? (
-            <p className="receipt-note">
-              <span className="receipt-note-label">Nota:</span>
-              <span className="receipt-note-text">{note}</span>
-            </p>
+            <div className="receipt-section note-section">
+              <p className="receipt-note">
+                <span className="receipt-note-label">Nota:</span>
+                <span className="receipt-note-text">{note}</span>
+              </p>
+            </div>
           ) : null}
 
-          <div className="receipt-payment-id">
-            <span className="receipt-id-label">ID de Pago:</span>
-            <span className="receipt-id-value">{paymentId}</span>
+          <div className="receipt-section payment-id-section">
+            <div className="receipt-payment-id">
+              <span className="receipt-id-label">ID de Pago:</span>
+              <span className="receipt-id-value">{paymentId}</span>
+            </div>
           </div>
 
-          <div className="receipt-footer">
+          <div className="receipt-section footer-section">
             <p className="receipt-thank-you">
               Gracias por su pago.
             </p>
