@@ -592,6 +592,42 @@ select:focus-visible {
   color: var(--text-muted);
 }
 
+.student-list-item {
+  position: relative;
+}
+
+.student-delete-btn {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--text-subtle);
+  font-size: 0.7rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.12s ease, color 0.12s ease;
+  z-index: 1;
+}
+
+.student-list-item:hover .student-delete-btn,
+.student-delete-btn:focus-visible {
+  opacity: 1;
+}
+
+.student-delete-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
 .hint-filtering {
   font-size: 0.8rem;
   color: var(--text-muted);

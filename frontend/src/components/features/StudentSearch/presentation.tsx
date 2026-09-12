@@ -17,6 +17,7 @@ export interface StudentSearchPresentationProps {
   error: string | null;
   isAdmin?: boolean;
   onNewStudent?: () => void;
+  onDeleteStudent?: (id: string, name: string) => void;
   onQueryChange: (value: string) => void;
   onSelect: (id: string) => void;
 }
@@ -41,6 +42,7 @@ export function StudentSearchPresentation({
   error,
   isAdmin,
   onNewStudent,
+  onDeleteStudent,
   onQueryChange,
   onSelect,
 }: StudentSearchPresentationProps) {
@@ -118,7 +120,7 @@ export function StudentSearchPresentation({
           const isComplete = total > 0 && paid >= total;
 
           return (
-            <li key={student.id}>
+            <li key={student.id} className="student-list-item">
               <button
                 type="button"
                 className={`student-row ${isSelected ? "is-selected" : ""}`}
@@ -142,6 +144,20 @@ export function StudentSearchPresentation({
                   <span className="chip-total">${student.total_expected}</span>
                 </div>
               </button>
+              {isAdmin && onDeleteStudent ? (
+                <button
+                  type="button"
+                  className="student-delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteStudent(student.id, student.full_name);
+                  }}
+                  title={`Eliminar a ${student.full_name}`}
+                  aria-label={`Eliminar a ${student.full_name}`}
+                >
+                  ✕
+                </button>
+              ) : null}
             </li>
           );
         })}

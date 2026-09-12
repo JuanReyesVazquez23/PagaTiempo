@@ -38,6 +38,8 @@ export function DashboardPage() {
 
   const [showDeleteStudentModal, setShowDeleteStudentModal] = useState(false);
   const [deleteStudentError, setDeleteStudentError] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [pendingDeleteName, setPendingDeleteName] = useState<string | null>(null);
 
   const [showResetAllModal, setShowResetAllModal] = useState(false);
   const [resetAllError, setResetAllError] = useState<string | null>(null);
@@ -119,20 +121,32 @@ export function DashboardPage() {
   }
 
   async function handleDeleteStudent(): Promise<void> {
-    if (!selectedId || !detail) return;
+    const deleteId = pendingDeleteId ?? selectedId;
+    const deleteName = pendingDeleteName ?? detail?.full_name;
+    if (!deleteId || !deleteName) return;
     setDeleteStudentError(null);
-    const deletedName = detail.full_name;
     try {
-      await deleteStudent(selectedId);
-      setSelectedId(null);
-      setDetail(null);
+      await deleteStudent(deleteId);
+      if (selectedId === deleteId) {
+        setSelectedId(null);
+        setDetail(null);
+      }
+      setPendingDeleteId(null);
+      setPendingDeleteName(null);
       setRefreshKey((k) => k + 1);
       setShowDeleteStudentModal(false);
-      setActionNotice(`Estudiante "${deletedName}" eliminado del sistema`);
+      setActionNotice(`Estudiante "${deleteName}" eliminado del sistema`);
       setTimeout(() => setActionNotice(null), 4000);
     } catch (cause: unknown) {
       setDeleteStudentError(cause instanceof ApiError ? cause.message : "No se pudo eliminar al estudiante");
     }
+  }
+
+  function handleOpenDeleteFromList(id: string, name: string): void {
+    setDeleteStudentError(null);
+    setPendingDeleteId(id);
+    setPendingDeleteName(name);
+    setShowDeleteStudentModal(true);
   }
 
   async function handleResetAll(): Promise<void> {
@@ -236,6 +250,7 @@ export function DashboardPage() {
             setNewStudentName("");
             setShowNewStudentModal(true);
           }}
+          onDeleteStudent={handleOpenDeleteFromList}
           onSelect={(id) => {
             setSelectedId(id);
           }}
@@ -378,13 +393,17 @@ export function DashboardPage() {
       {/* Modal: Confirmar Eliminar Estudiante */}
       <Modal
         isOpen={showDeleteStudentModal}
-        onClose={() => setShowDeleteStudentModal(false)}
+        onClose={() => {
+          setShowDeleteStudentModal(false);
+          setPendingDeleteId(null);
+          setPendingDeleteName(null);
+        }}
         title="Eliminar Estudiante"
       >
         <div>
           <p style={{ marginBottom: "1rem" }}>
             Estas seguro de que deseas eliminar permanentemente a{" "}
-            <strong>{detail?.full_name}</strong>?
+            <strong>{pendingDeleteName ?? detail?.full_name}</strong>?
           </p>
           <p className="hint" style={{ marginBottom: "1rem" }}>
             Se eliminara al estudiante junto con sus 10 cuotas y todo su historial de recibos. Esta accion no se puede deshacer.

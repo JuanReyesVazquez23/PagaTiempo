@@ -9,9 +9,10 @@ interface Props {
   refreshKey: number;
   isAdmin?: boolean;
   onNewStudent?: () => void;
+  onDeleteStudent?: (id: string, name: string) => void;
 }
 
-export function StudentSearch({ selectedId, onSelect, refreshKey, isAdmin, onNewStudent }: Props) {
+export function StudentSearch({ selectedId, onSelect, refreshKey, isAdmin, onNewStudent, onDeleteStudent }: Props) {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
   const [students, setStudents] = useState<StudentSummary[]>([]);
@@ -53,6 +54,7 @@ export function StudentSearch({ selectedId, onSelect, refreshKey, isAdmin, onNew
       error={error}
       isAdmin={isAdmin}
       onNewStudent={onNewStudent}
+      onDeleteStudent={onDeleteStudent}
       onQueryChange={(value) => startTransition(() => setQuery(value))}
       onSelect={onSelect}
     />
