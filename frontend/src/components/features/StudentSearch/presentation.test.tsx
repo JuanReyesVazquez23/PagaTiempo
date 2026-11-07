@@ -12,7 +12,7 @@ describe("StudentSearchPresentation", () => {
         loading={false}
         error={null}
         students={[
-          { id: "1", full_name: "Juan Pérez", total_paid: "0.00", total_expected: "5000.00" },
+          { id: "1", full_name: "Juan Pérez", total_paid: "0.00", total_expected: "5200.00" },
         ]}
         onQueryChange={() => undefined}
         onSelect={() => undefined}
@@ -54,8 +54,8 @@ describe("StudentSearchPresentation", () => {
         isAdmin={true}
         onDeleteStudent={() => undefined}
         students={[
-          { id: "1", full_name: "Juan Pérez", total_paid: "0.00", total_expected: "5000.00" },
-          { id: "2", full_name: "Ana García", total_paid: "100.00", total_expected: "5000.00" },
+          { id: "1", full_name: "Juan Pérez", total_paid: "0.00", total_expected: "5200.00" },
+          { id: "2", full_name: "Ana García", total_paid: "100.00", total_expected: "5200.00" },
         ]}
         onQueryChange={() => undefined}
         onSelect={() => undefined}
@@ -74,7 +74,7 @@ describe("StudentSearchPresentation", () => {
         error={null}
         isAdmin={false}
         students={[
-          { id: "1", full_name: "Juan Pérez", total_paid: "0.00", total_expected: "5000.00" },
+          { id: "1", full_name: "Juan Pérez", total_paid: "0.00", total_expected: "5200.00" },
         ]}
         onQueryChange={() => undefined}
         onSelect={() => undefined}
@@ -98,7 +98,7 @@ describe("StudentSearchPresentation", () => {
           deletedName = name;
         }}
         students={[
-          { id: "42", full_name: "Pedro López", total_paid: "0.00", total_expected: "5000.00" },
+          { id: "42", full_name: "Pedro López", total_paid: "0.00", total_expected: "5200.00" },
         ]}
         onQueryChange={() => undefined}
         onSelect={() => undefined}

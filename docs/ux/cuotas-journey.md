@@ -22,7 +22,7 @@ Tesorera, goal = anotar el pago en el historial correcto.
 
 ### 3. Historial
 
-- Doing: abre a María, mira 10 meses e historial
+- Doing: abre a María, mira los 7 meses e historial
 - Thinking: “¿Cuánto le falta a octubre?”
 - Feeling: necesita certeza
 - Opportunity: grid de meses + lista de movimientos

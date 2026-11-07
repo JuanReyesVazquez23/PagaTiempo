@@ -8,7 +8,13 @@ from app.database import Base, SessionLocal, engine
 from app.routers.admin import router as admin_router
 from app.routers.auth import router as auth_router
 from app.routers.students import router as students_router
-from app.seed import create_search_index, ensure_extensions, ensure_rate_limit_table, seed_if_empty
+from app.seed import (
+    create_search_index,
+    ensure_extensions,
+    ensure_rate_limit_table,
+    seed_if_empty,
+    sync_cycle_installments,
+)
 
 settings = get_settings()
 
@@ -21,6 +27,7 @@ async def lifespan(app: FastAPI):
         ensure_rate_limit_table(db)
         Base.metadata.create_all(bind=engine)
         create_search_index(db)
+        sync_cycle_installments(db, settings)
         seed_if_empty(db, settings)
     finally:
         db.close()

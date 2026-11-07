@@ -64,7 +64,7 @@ class StudentDetail(MoneyModel):
 
 class PaymentCreate(BaseModel):
     amount: Decimal = Field(gt=0, max_digits=12, decimal_places=2)
-    month_index: int | None = Field(default=None, ge=1, le=10)
+    month_index: int | None = Field(default=None, ge=1, le=12)
     note: str | None = Field(default=None, max_length=500)
 
 

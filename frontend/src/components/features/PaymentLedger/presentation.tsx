@@ -136,7 +136,7 @@ export function PaymentLedgerPresentation({
 
         <div className="overall-meter-container">
           <div className="overall-meter-labels">
-            <span>Progreso del ciclo (10 cuotas)</span>
+            <span>Progreso del ciclo ({student.installments.length} cuotas)</span>
             <strong>{percentVal}% cubierto</strong>
           </div>
           <div className="overall-meter" role="progressbar" aria-valuenow={percentVal} aria-valuemin={0} aria-valuemax={100}>

@@ -191,7 +191,7 @@ export function DashboardPage() {
         <div className="topbar-brand">
           <Logo size={40} />
           <div>
-            <span className="eyebrow">Ciclo Sep 2026 — Jun 2027</span>
+            <span className="eyebrow">Ciclo Dic 2026 — Jun 2027</span>
             <h1>Libro de Cuotas</h1>
           </div>
         </div>
@@ -286,7 +286,7 @@ export function DashboardPage() {
               <div className="empty-hero-icon" aria-hidden="true">📋</div>
               <h3>Selecciona un estudiante</h3>
               <p className="hint">
-                Elige un nombre en la lista para ver su historial de 10 meses y registrar cuotas.
+                Elige un nombre en la lista para ver su historial de cuotas y registrar pagos.
               </p>
               {isAdmin ? (
                 <button
@@ -315,7 +315,7 @@ export function DashboardPage() {
       >
         <form onSubmit={handleCreateStudent}>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            El nuevo estudiante sera incorporado con sus 10 cuotas correspondientes al ciclo escolar.
+            El nuevo estudiante sera incorporado con sus cuotas correspondientes al ciclo escolar.
           </p>
           <div className="field">
             <label htmlFor="new-student-name">Nombre del estudiante</label>
@@ -406,7 +406,7 @@ export function DashboardPage() {
             <strong>{pendingDeleteName ?? detail?.full_name}</strong>?
           </p>
           <p className="hint" style={{ marginBottom: "1rem" }}>
-            Se eliminara al estudiante junto con sus 10 cuotas y todo su historial de recibos. Esta accion no se puede deshacer.
+            Se eliminara al estudiante junto con sus cuotas y todo su historial de recibos. Esta accion no se puede deshacer.
           </p>
           {deleteStudentError ? (
             <p className="alert" role="alert">

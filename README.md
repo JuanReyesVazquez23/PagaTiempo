@@ -1,6 +1,8 @@
 # PagaTiempo
 
-Libro de cuotas para tesorera. 10 meses desde el 4 de septiembre de 2026 (sep 2026–jun 2027). Estudiantes de ejemplo: Juan Pérez, María García, Pedro López.
+Libro de cuotas para tesorera. 7 meses desde el 1 de diciembre de 2026 (dic 2026–jun 2027), con junio prorrateado a 2 semanas. Cuota mensual de RD$800 y meta total de RD$5,200 por estudiante. Estudiantes de ejemplo: Juan Pérez, María García, Pedro López.
+
+Al arrancar, el backend sincroniza las cuotas de los estudiantes existentes con este ciclo y conserva su historial de pagos.
 
 ## Stack
 
@@ -50,9 +52,9 @@ Es un repo con `frontend/` y `backend/` como carpetas hermanas. Cada uno se impo
 
 ## Modos de Acceso: Tesorera y Administrador
 
-- **Modo Tesorera:** Se accede con `TREASURER_PIN` (demo: `2468`). Diseñado para el día a día: consulta de saldos, desglose de los 10 meses y registro rápido de pagos.
+- **Modo Tesorera:** Se accede con `TREASURER_PIN` (demo: `2468`). Diseñado para el día a día: consulta de saldos, desglose de los 7 meses y registro rápido de pagos.
 - **Modo Administrador:** Se accede con `ADMIN_KEY` (variable configurada en Vercel). Habilita funciones de gestión avanzada:
-  - **Agregar estudiantes:** Crea estudiantes nuevos y les genera automáticamente sus 10 cuotas correspondientes al ciclo.
+  - **Agregar estudiantes:** Crea estudiantes nuevos y les genera automáticamente sus 7 cuotas correspondientes al ciclo.
   - **Eliminar estudiantes:** Elimina al estudiante y todo su historial de cuotas/pagos asociados de manera permanente.
   - **Limpiar cuentas:** Restablece las cuotas a 0.00 pagado y elimina los pagos registrados, ya sea para un estudiante individual o para todo el ciclo escolar.
 

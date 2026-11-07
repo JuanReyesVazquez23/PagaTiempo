@@ -24,11 +24,11 @@ export function MonthGrid({ months, currency = "DOP" }: Props) {
     <section className="panel month-grid-panel" aria-labelledby="installments-heading">
       <div className="panel-header">
         <h2 id="installments-heading" className="panel-title">
-          Ciclo de 10 Cuotas
+          Ciclo de {months.length} Cuotas
         </h2>
         <span className="badge-meta">Año Escolar 2026–2027</span>
       </div>
-      <ol className="month-grid" aria-label="Cuotas de diez meses">
+      <ol className="month-grid" aria-label="Cuotas del ciclo">
         {months.map((month) => {
           const meta = STATUS_META[month.status] ?? { label: month.status, icon: "•" };
           const paid = parseFloat(month.paid_amount) || 0;

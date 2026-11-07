@@ -6,7 +6,6 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.auth import require_admin
-from app.calendar_util import month_start
 from app.config import Settings, get_settings
 from app.database import get_db
 from app.models import Installment, Payment, Student
@@ -42,14 +41,13 @@ def create_student(
     db.add(student)
     db.flush()
 
-    quota = Decimal(settings.monthly_quota)
-    for month_index in range(1, settings.cycle_months + 1):
+    for item in settings.cycle_plan:
         db.add(
             Installment(
                 student_id=student.id,
-                month_index=month_index,
-                period_start=month_start(settings.cycle_start, month_index),
-                expected_amount=quota,
+                month_index=item.month_index,
+                period_start=item.period_start,
+                expected_amount=item.expected_amount,
                 paid_amount=Decimal("0.00"),
             )
         )

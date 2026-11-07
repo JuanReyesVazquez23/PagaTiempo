@@ -43,7 +43,7 @@ class Installment(Base):
     __tablename__ = "installments"
     __table_args__ = (
         UniqueConstraint("student_id", "month_index", name="uq_installment_student_month"),
-        CheckConstraint("month_index >= 1 AND month_index <= 10", name="ck_month_index"),
+        CheckConstraint("month_index >= 1 AND month_index <= 12", name="ck_month_index"),
         CheckConstraint("expected_amount >= 0", name="ck_expected_non_negative"),
         CheckConstraint("paid_amount >= 0", name="ck_paid_non_negative"),
     )

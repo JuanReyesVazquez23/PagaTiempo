@@ -1,7 +1,7 @@
 {
   "name": "PagaTiempo",
   "short_name": "PagaTiempo",
-  "description": "Libro de cuotas escolares para tesorera. Gestión ordenada de 10 meses de cuotas por estudiante.",
+  "description": "Libro de cuotas escolares para tesorera. Gestión ordenada del ciclo diciembre–junio por estudiante.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#e9edf2",

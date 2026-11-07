@@ -29,7 +29,7 @@ export function LoginPage() {
         <header className="hero login-hero">
           <div className="login-brand-pill">
             <Logo size={40} className="brand-badge" />
-            <span className="eyebrow">Tesorera · Ciclo 10 meses</span>
+            <span className="eyebrow">Tesorera · Ciclo Dic 2026 – Jun 2027</span>
           </div>
           <h1>PagaTiempo</h1>
           <p className="login-tagline">

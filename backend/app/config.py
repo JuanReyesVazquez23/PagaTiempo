@@ -4,6 +4,8 @@ from functools import lru_cache
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.cycle import CycleInstallment, build_cycle_plan
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -15,10 +17,22 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
-    cycle_start: date = date(2026, 9, 4)
-    cycle_months: int = 10
-    monthly_quota: str = "500.00"
+    cycle_start: date = date(2026, 12, 1)
+    cycle_months: int = 7
+    monthly_quota: str = "800.00"
+    cycle_last_month_weeks: int = 2
+    cycle_weeks_per_month: int = 4
     currency: str = "DOP"
+
+    @property
+    def cycle_plan(self) -> list[CycleInstallment]:
+        return build_cycle_plan(
+            start=self.cycle_start,
+            months=self.cycle_months,
+            monthly_quota=self.monthly_quota,
+            last_month_weeks=self.cycle_last_month_weeks,
+            weeks_per_month=self.cycle_weeks_per_month,
+        )
 
     @property
     def cors_origin_list(self) -> list[str]:
