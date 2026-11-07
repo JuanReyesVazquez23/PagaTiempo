@@ -37,10 +37,12 @@ export function PWAInstallButton() {
   );
 
   useEffect(() => {
-    // Registrar Service Worker
+    // Registrar Service Worker. updateViaCache "none" evita que el
+    // navegador use una copia vieja del propio sw.js desde el cache HTTP.
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
-        .register("/sw.js")
+        .register("/sw.js", { updateViaCache: "none" })
+        .then((registration) => registration.update())
         .catch((err) => console.error("[PWA] SW registration failed:", err));
     }
 

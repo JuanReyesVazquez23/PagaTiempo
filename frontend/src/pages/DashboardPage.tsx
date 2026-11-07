@@ -11,23 +11,22 @@ import {
   createStudent,
   deleteStudent,
   exitAdminMode,
-  fetchMe,
   fetchStudent,
   logout,
   resetAllAccounts,
   resetStudentAccount,
+  type Role,
   type StudentDetail,
 } from "../lib/api";
 
-export function DashboardPage() {
+export function DashboardPage({ initialRole }: { initialRole: Role }) {
   const navigate = useNavigate();
-  const [role, setRole] = useState<"treasurer" | "admin">("treasurer");
+  const [role, setRole] = useState<Role>(initialRole);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<StudentDetail | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionNotice, setActionNotice] = useState<string | null>(null);
-  const [checkingSession, setCheckingSession] = useState(true);
 
   const [showNewStudentModal, setShowNewStudentModal] = useState(false);
   const [newStudentName, setNewStudentName] = useState("");
@@ -44,22 +43,6 @@ export function DashboardPage() {
   const [showResetAllModal, setShowResetAllModal] = useState(false);
   const [resetAllError, setResetAllError] = useState<string | null>(null);
 
-  // Verificar sesion activa al montar
-  useEffect(() => {
-    let active = true;
-    fetchMe()
-      .then((data) => {
-        if (active) setRole(data.role);
-      })
-      .catch(() => {
-        if (active) navigate("/", { replace: true });
-      })
-      .finally(() => {
-        if (active) setCheckingSession(false);
-      });
-    return () => { active = false; };
-  }, [navigate]);
-
   // Cargar detalle del estudiante seleccionado
   useEffect(() => {
     if (!selectedId) {
@@ -75,8 +58,11 @@ export function DashboardPage() {
   }, [selectedId, refreshKey]);
 
   async function onLogout(): Promise<void> {
-    await logout();
-    navigate("/");
+    try {
+      await logout();
+    } finally {
+      navigate("/", { replace: true });
+    }
   }
 
   async function handleExitAdmin(): Promise<void> {
@@ -164,17 +150,6 @@ export function DashboardPage() {
     } catch (cause: unknown) {
       setResetAllError(cause instanceof ApiError ? cause.message : "No se pudieron limpiar las cuentas");
     }
-  }
-
-  if (checkingSession) {
-    return (
-      <main className="shell">
-        <div className="checking-session">
-          <div className="checking-spinner" aria-hidden="true" />
-          <p>Verificando sesion…</p>
-        </div>
-      </main>
-    );
   }
 
   const isAdmin = role === "admin";

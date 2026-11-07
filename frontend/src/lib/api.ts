@@ -12,6 +12,40 @@ function apiUrl(path: string): string {
   return `${API_BASE_URL}${path}`;
 }
 
+export type Role = "treasurer" | "admin";
+
+/** Evento global: la sesión expiró o dejó de ser válida. */
+export const AUTH_EXPIRED_EVENT = "pagatiempo:auth-expired";
+
+// Los endpoints de autenticación pueden devolver 401 de forma legítima
+// (credenciales incorrectas) sin que eso signifique que la sesión expiró.
+const AUTH_PATHS = new Set([
+  "/api/auth/login",
+  "/api/auth/admin-login",
+  "/api/auth/me",
+  "/api/auth/logout",
+  "/api/auth/downgrade",
+]);
+
+async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers);
+  headers.set("X-Requested-With", "XMLHttpRequest");
+
+  const response = await fetch(apiUrl(path), {
+    ...init,
+    credentials: "include",
+    cache: "no-store",
+    headers,
+  });
+
+  const pathname = path.split("?")[0] ?? path;
+  if (response.status === 401 && !AUTH_PATHS.has(pathname)) {
+    window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+  }
+
+  return response;
+}
+
 export interface StudentSummary {
   id: string;
   full_name: string;
@@ -74,9 +108,8 @@ async function parseError(response: Response): Promise<string> {
 }
 
 export async function login(pin: string): Promise<void> {
-  const response = await fetch(apiUrl("/api/auth/login"), {
+  const response = await apiFetch("/api/auth/login", {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pin }),
   });
@@ -86,9 +119,8 @@ export async function login(pin: string): Promise<void> {
 }
 
 export async function adminLogin(password: string): Promise<void> {
-  const response = await fetch(apiUrl("/api/auth/admin-login"), {
+  const response = await apiFetch("/api/auth/admin-login", {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ password }),
   });
@@ -98,21 +130,18 @@ export async function adminLogin(password: string): Promise<void> {
 }
 
 export async function exitAdminMode(): Promise<void> {
-  const response = await fetch(apiUrl("/api/auth/downgrade"), {
-    method: "POST",
-    credentials: "include",
-  });
+  const response = await apiFetch("/api/auth/downgrade", { method: "POST" });
   if (!response.ok) {
     throw new ApiError(await parseError(response), response.status);
   }
 }
 
 export async function logout(): Promise<void> {
-  await fetch(apiUrl("/api/auth/logout"), { method: "POST", credentials: "include" });
+  await apiFetch("/api/auth/logout", { method: "POST" });
 }
 
-export async function fetchMe(): Promise<{ role: "treasurer" | "admin"; student_count: number }> {
-  const response = await fetch(apiUrl("/api/auth/me"), { credentials: "include" });
+export async function fetchMe(): Promise<{ role: Role; student_count: number }> {
+  const response = await apiFetch("/api/auth/me");
   if (!response.ok) {
     throw new ApiError("No autenticada", response.status);
   }
@@ -125,7 +154,7 @@ export async function fetchStudents(query: string): Promise<StudentSummary[]> {
     params.set("q", query.trim());
   }
   const suffix = params.size ? `?${params.toString()}` : "";
-  const response = await fetch(apiUrl(`/api/students${suffix}`), { credentials: "include" });
+  const response = await apiFetch(`/api/students${suffix}`);
   if (!response.ok) {
     throw new ApiError(await parseError(response), response.status);
   }
@@ -133,7 +162,7 @@ export async function fetchStudents(query: string): Promise<StudentSummary[]> {
 }
 
 export async function fetchStudent(id: string): Promise<StudentDetail> {
-  const response = await fetch(apiUrl(`/api/students/${id}`), { credentials: "include" });
+  const response = await apiFetch(`/api/students/${id}`);
   if (!response.ok) {
     throw new ApiError(await parseError(response), response.status);
   }
@@ -144,9 +173,8 @@ export async function createPayment(
   studentId: string,
   payload: { amount: string; month_index: number | null; note: string },
 ): Promise<StudentDetail> {
-  const response = await fetch(apiUrl(`/api/students/${studentId}/payments`), {
+  const response = await apiFetch(`/api/students/${studentId}/payments`, {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       amount: payload.amount,
@@ -161,9 +189,8 @@ export async function createPayment(
 }
 
 export async function createStudent(fullName: string): Promise<StudentDetail> {
-  const response = await fetch(apiUrl("/api/admin/students"), {
+  const response = await apiFetch("/api/admin/students", {
     method: "POST",
-    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ full_name: fullName }),
   });
@@ -174,9 +201,8 @@ export async function createStudent(fullName: string): Promise<StudentDetail> {
 }
 
 export async function deleteStudent(studentId: string): Promise<void> {
-  const response = await fetch(apiUrl(`/api/admin/students/${studentId}`), {
+  const response = await apiFetch(`/api/admin/students/${studentId}`, {
     method: "DELETE",
-    credentials: "include",
   });
   if (!response.ok) {
     throw new ApiError(await parseError(response), response.status);
@@ -184,9 +210,8 @@ export async function deleteStudent(studentId: string): Promise<void> {
 }
 
 export async function resetStudentAccount(studentId: string): Promise<StudentDetail> {
-  const response = await fetch(apiUrl(`/api/admin/students/${studentId}/reset`), {
+  const response = await apiFetch(`/api/admin/students/${studentId}/reset`, {
     method: "POST",
-    credentials: "include",
   });
   if (!response.ok) {
     throw new ApiError(await parseError(response), response.status);
@@ -195,10 +220,7 @@ export async function resetStudentAccount(studentId: string): Promise<StudentDet
 }
 
 export async function resetAllAccounts(): Promise<void> {
-  const response = await fetch(apiUrl("/api/admin/reset-all"), {
-    method: "POST",
-    credentials: "include",
-  });
+  const response = await apiFetch("/api/admin/reset-all", { method: "POST" });
   if (!response.ok) {
     throw new ApiError(await parseError(response), response.status);
   }

@@ -19,8 +19,17 @@ MAX_ATTEMPTS = 5
 WINDOW_SECONDS = 60.0
 
 
+def _lock(db: Session, key: str) -> None:
+    """Serialize concurrent attempts from the same client."""
+    db.execute(
+        text("SELECT pg_advisory_xact_lock(hashtext(:lock_key))"),
+        {"lock_key": f"login:{key}"},
+    )
+
+
 def is_rate_limited(db: Session, key: str) -> bool:
     """Registra un intento para ``key`` y dice si ya superó el límite."""
+    _lock(db, key)
     now = time.time()
     cutoff = now - WINDOW_SECONDS
 
@@ -45,5 +54,6 @@ def is_rate_limited(db: Session, key: str) -> bool:
 
 def reset(db: Session, key: str) -> None:
     """Limpia los intentos de ``key`` (se llama tras un login correcto)."""
+    _lock(db, key)
     db.execute(text("DELETE FROM rate_limit_attempts WHERE client_key = :key"), {"key": key})
     db.commit()

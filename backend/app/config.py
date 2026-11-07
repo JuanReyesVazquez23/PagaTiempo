@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     cookie_secure: bool = False
     cookie_samesite: str = "lax"
+    trust_proxy_headers: bool = False
     cycle_start: date = date(2026, 12, 1)
     cycle_months: int = 7
     monthly_quota: str = "800.00"
@@ -49,6 +50,11 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def _validate_cookie_policy(self) -> "Settings":
+        if "*" in self.cors_origin_list:
+            raise ValueError(
+                "CORS_ORIGINS no puede contener '*' cuando se envían cookies de sesión"
+            )
+
         samesite = self.cookie_samesite.strip().lower()
         if samesite not in {"lax", "strict", "none"}:
             raise ValueError("COOKIE_SAMESITE debe ser 'lax', 'strict' o 'none'")
