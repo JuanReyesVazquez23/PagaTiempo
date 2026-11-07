@@ -37,7 +37,7 @@ Es un repo con `frontend/` y `backend/` como carpetas hermanas. Cada uno se impo
 **Proyecto 1: backend**
 1. Nuevo proyecto → importa el repo → en **Root Directory** pon `backend`.
 2. Vercel detecta FastAPI solo (usa `app/main.py` y `requirements.txt`, sin configuración extra).
-3. Variables de entorno **de este proyecto**: `DATABASE_URL`, `TREASURER_PIN`, `ADMIN_KEY`, `SECRET_KEY`, `CORS_ORIGINS`, `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none` — ver los comentarios en `backend/.env.example`.
+3. Variables de entorno **de este proyecto**: `DATABASE_URL`, `TREASURER_PIN`, `ADMIN_KEY`, `SECRET_KEY`, `CORS_ORIGINS`, `COOKIE_SECURE=true`, `COOKIE_SAMESITE=none`, `TRUST_PROXY_HEADERS=true` — ver los comentarios en `backend/.env.example`.
 4. Si usas Neon, copia el endpoint agrupado (el que trae `-pooler` en el host) como `DATABASE_URL`: el backend corre como funciones serverless y ese endpoint evita agotar las conexiones.
 
 **Proyecto 2: frontend**
@@ -49,6 +49,15 @@ Es un repo con `frontend/` y `backend/` como carpetas hermanas. Cada uno se impo
 **Orden recomendado:** despliega primero el backend para confirmar su URL (ajústala en `frontend/vercel.json` si hace falta) y luego el frontend. `CORS_ORIGINS` en el backend puedes dejarlo con la URL del frontend de todas formas, como respaldo por si algo llama a la API directo sin pasar por el proxy.
 
 `frontend/netlify.toml` se queda en el repo por si en algún momento despliegas ahí — Vercel lo ignora, así que no interfiere.
+
+## Seguridad
+
+- **/panel protegido:** el frontend verifica la sesión contra la API antes de montar el panel (`RequireAuth`); abrir `/panel` directamente sin sesión redirige al login. Todos los endpoints de datos exigen además la cookie firmada en el backend.
+- **Sesión:** cookie `HttpOnly` firmada; con `COOKIE_SECURE=true` se emite como `__Host-pagatiempo_session` (Secure, sin `Domain`). Expira a las 12 horas.
+- **Anti-CSRF:** las peticiones `POST`/`PUT`/`PATCH`/`DELETE` a `/api/*` deben enviar `X-Requested-With: XMLHttpRequest`, lo que un sitio externo no puede hacer sin pasar por CORS.
+- **Límite de intentos:** máximo 5 intentos de login por minuto e IP (persistente en PostgreSQL, con bloqueo para evitar carreras).
+- **Cabeceras:** CSP, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS y `no-store` en respuestas de la API, tanto en el backend como en `frontend/vercel.json` y `frontend/netlify.toml`.
+- **PWA:** el service worker no cachea `/api/`, usa red-primero para navegaciones y se actualiza sin caché HTTP, para no servir una versión vieja del panel.
 
 ## Modos de Acceso: Tesorera y Administrador
 

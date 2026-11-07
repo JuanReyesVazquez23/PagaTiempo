@@ -14,7 +14,12 @@ from app.schemas import AdminLoginRequest, LoginRequest
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 
-def _client_key(request: Request) -> str:
+def _client_key(request: Request, settings: Settings) -> str:
+    if settings.trust_proxy_headers:
+        forwarded = request.headers.get("x-forwarded-for", "")
+        first_hop = forwarded.split(",", 1)[0].strip()
+        if first_hop:
+            return first_hop
     return request.client.host if request.client else "unknown"
 
 
@@ -26,7 +31,7 @@ def login(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> dict[str, str]:
-    client_key = _client_key(request)
+    client_key = _client_key(request, settings)
     if is_rate_limited(db, client_key):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
@@ -47,7 +52,7 @@ def admin_login(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ) -> dict[str, str]:
-    client_key = _client_key(request)
+    client_key = _client_key(request, settings)
     if is_rate_limited(db, client_key):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
